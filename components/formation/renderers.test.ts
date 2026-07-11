@@ -36,6 +36,15 @@ describe("跨渲染器坐标约定", () => {
     expect(shell).not.toMatch(/from ["']three["']/);
   });
 
+  it("2.5D 从人物真实状态解析方向与四区换色", () => {
+    const pixi = readFileSync(resolve(root, "components/formation/stage-25d-view.tsx"), "utf8");
+    expect(pixi).toContain("p.spriteId ?? resolveSpriteId");
+    expect(pixi).toContain("resolveSpriteAssets(manifest, p.direction)");
+    expect(pixi).toContain("assets.masks[region]");
+    expect(pixi).toContain("node.setAppearance(p.appearance)");
+    expect(pixi).toContain('overlay.blendMode = "multiply"');
+  });
+
   it("Canvas PNG 导出生成下载链接且不是空实现", () => {
     const source = readFileSync(resolve(root, "components/formation/dot-sketch-view.tsx"), "utf8");
     expect(source).toContain('canvas.toDataURL("image/png")');

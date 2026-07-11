@@ -21,6 +21,15 @@ export const masksSchema = z.object({
   accent: z.string().nullable().default(null),
 });
 
+export const directionMasksSchema = z.object({
+  front: masksSchema,
+  frontLeft: masksSchema,
+  frontRight: masksSchema,
+});
+
+export type SpriteDirection = "front" | "frontLeft" | "frontRight";
+export type AppearanceRegion = keyof z.infer<typeof masksSchema>;
+
 export const spriteManifestSchema = z.object({
   characterId: z.string(),
   spriteId: z.string(),
@@ -35,7 +44,9 @@ export const spriteManifestSchema = z.object({
   /** 锚点(0~1,相对图像):脚底中心通常为 {x:0.5,y:1} */
   anchor: z.object({ x: z.number().min(0).max(1), y: z.number().min(0).max(1) }),
   directions: directionSchema,
+  /** 兼容早期单方向遮罩;正式素材必须使用 directionMasks。 */
   masks: masksSchema.default(() => masksSchema.parse({})),
+  directionMasks: directionMasksSchema.nullable().default(null),
   /** 素材状态:development 仅开发预览;production 必须具备三方向和四类遮罩 */
   assetStatus: z.enum(["development", "production"]).default("development"),
   /** 兼容旧字段;正式素材接入后置 false */
@@ -46,12 +57,40 @@ export type SpriteManifest = z.infer<typeof spriteManifestSchema>;
 
 /** 正式素材必须具备三方向与四类换色遮罩;开发素材允许缺失并由渲染器降级。 */
 export function isProductionReady(manifest: SpriteManifest): boolean {
+  const complete = (m: z.infer<typeof masksSchema>) => Boolean(m.upper && m.lower && m.footwear && m.accent);
   return manifest.assetStatus === "production"
+    && manifest.placeholder === false
     && Boolean(manifest.directions.front && manifest.directions.frontLeft && manifest.directions.frontRight)
-    && Boolean(manifest.masks.upper && manifest.masks.lower && manifest.masks.footwear && manifest.masks.accent);
+    && Boolean(manifest.directionMasks)
+    && Object.values(manifest.directionMasks ?? {}).every(complete);
+}
+
+/** 将角度稳定映射到三方向资源。负角度朝左,正角度朝右。 */
+export function resolveSpriteDirection(direction: number): SpriteDirection {
+  if (direction < -20) return "frontLeft";
+  if (direction > 20) return "frontRight";
+  return "front";
+}
+
+/** 返回某方向的底图与四区遮罩;开发素材自动回退到兼容遮罩。 */
+export function resolveSpriteAssets(manifest: SpriteManifest, direction: number) {
+  const key = resolveSpriteDirection(direction);
+  return {
+    direction: key,
+    image: manifest.directions[key] ?? manifest.directions.front,
+    masks: manifest.directionMasks?.[key] ?? manifest.masks,
+  };
 }
 
 const BASE = "/assets/stage-2.5d/characters";
+
+/** 原画上传后必须落盘的正式文件名,用于接入脚本与测试共享。 */
+export const PRODUCTION_ASSET_FILES = [
+  "front.webp", "front-left.webp", "front-right.webp",
+  "front-upper.webp", "front-lower.webp", "front-footwear.webp", "front-accent.webp",
+  "front-left-upper.webp", "front-left-lower.webp", "front-left-footwear.webp", "front-left-accent.webp",
+  "front-right-upper.webp", "front-right-lower.webp", "front-right-footwear.webp", "front-right-accent.webp",
+] as const;
 
 /** 首批测试人物:小学女生 · 基础白色服装 */
 const PRIMARY_GIRL_BASIC_WHITE: SpriteManifest = spriteManifestSchema.parse({

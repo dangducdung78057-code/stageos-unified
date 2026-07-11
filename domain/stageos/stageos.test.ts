@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { canUsePreview, getEntitlements } from "./entitlements";
-import { getSpriteManifest, resolveSpriteId, spriteManifestSchema } from "./sprite-manifest";
+import {
+  getSpriteManifest,
+  isProductionReady,
+  PRODUCTION_ASSET_FILES,
+  resolveSpriteAssets,
+  resolveSpriteDirection,
+  resolveSpriteId,
+  spriteManifestSchema,
+} from "./sprite-manifest";
 import { parseSceneData, stageSceneSchema } from "./scene";
 
 const baseScene = {
@@ -43,6 +51,16 @@ describe("场景项目隔离与迁移", () => {
     expect(a.projectId).not.toBe(b.projectId);
   });
 
+  it("人物素材与外观字段保存恢复不丢失", () => {
+    const performer = {
+      id: "S01", gender: "female" as const, heightCm: 140, x: 1, z: 2, riserLevel: 2,
+      groupId: "声部-A", roleLabel: "领唱", direction: -30, spriteId: "primary-girl-basic-white",
+      appearance: { outfitId: "basic-white", upperColor: "#ff0000", lowerColor: "#00ff00", footwearColor: "#ffffff", accentColor: "#0000ff" },
+    };
+    const restored = stageSceneSchema.parse({ ...baseScene, performers: [performer] }).performers[0];
+    expect(restored).toEqual(performer);
+  });
+
   it("旧版场景迁移到 schemaVersion 2", () => {
     const migrated = parseSceneData({
       performers: [], activePreset: "标准方阵式", spacing: 1.8, keyframes: [],
@@ -66,10 +84,35 @@ describe("Sprite Manifest", () => {
     expect(getSpriteManifest("primary-girl-basic-white")?.placeholder).toBe(true);
   });
 
-  it("正式素材必须能通过完整 Manifest 校验", () => {
+  it("开发素材不得冒充正式素材", () => {
     const manifest = getSpriteManifest("primary-girl-basic-white");
     expect(() => spriteManifestSchema.parse(manifest)).not.toThrow();
     expect(manifest?.directions.frontLeft).toBeTruthy();
     expect(manifest?.directions.frontRight).toBeTruthy();
+    expect(manifest && isProductionReady(manifest)).toBe(false);
+  });
+
+  it("正式素材必须有三方向和每方向四区遮罩", () => {
+    const masks = { upper: "/u.webp", lower: "/l.webp", footwear: "/f.webp", accent: "/a.webp" };
+    const production = spriteManifestSchema.parse({
+      characterId: "test", spriteId: "test-production", ageSegment: "primary", gender: "female",
+      outfitId: "basic-white", worldHeightCm: 140, imageWidth: 256, imageHeight: 512,
+      anchor: { x: 0.5, y: 1 },
+      directions: { front: "/front.webp", frontLeft: "/left.webp", frontRight: "/right.webp" },
+      masks,
+      directionMasks: { front: masks, frontLeft: masks, frontRight: masks },
+      assetStatus: "production", placeholder: false,
+    });
+    expect(isProductionReady(production)).toBe(true);
+    expect(PRODUCTION_ASSET_FILES).toHaveLength(15);
+  });
+
+  it("方向与对应遮罩解析稳定", () => {
+    const manifest = getSpriteManifest("primary-girl-basic-white")!;
+    expect(resolveSpriteDirection(-45)).toBe("frontLeft");
+    expect(resolveSpriteDirection(0)).toBe("front");
+    expect(resolveSpriteDirection(45)).toBe("frontRight");
+    expect(resolveSpriteAssets(manifest, -45).image).toBe(manifest.directions.frontLeft);
+    expect(resolveSpriteAssets(manifest, 0).masks).toEqual(manifest.masks);
   });
 });

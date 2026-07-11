@@ -126,7 +126,7 @@ export const staggeredTwoRowPositions: FormationCompute = (n, spacing) => {
 };
 
 // 8. 斜线破格式:贯穿舞台的对角斜线
-export const diagonalPositions: FormationCompute = (n, _spacing) => {
+export const diagonalPositions: FormationCompute = (n) => {
   const out: [number, number][] = [];
   for (let i = 0; i < n; i++) {
     const t = n > 1 ? i / (n - 1) : 0.5;

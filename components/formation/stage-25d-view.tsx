@@ -4,17 +4,38 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { Application, Container, Texture } from "pixi.js";
+import type { Application, Container, Sprite, Texture } from "pixi.js";
 import { useEditorStore, BOUND_X, BOUND_Z, type Performer } from "./editor-core";
-import { getSpriteManifest, resolveSpriteId } from "@/domain/stageos/sprite-manifest";
+import {
+  getSpriteManifest,
+  resolveSpriteAssets,
+  resolveSpriteId,
+  type AppearanceRegion,
+} from "@/domain/stageos/sprite-manifest";
 import { stageToScreen, depthSort } from "./projection";
+
+type Appearance = Performer["appearance"];
 
 type Node = {
   container: Container;
   setSelected: (v: boolean) => void;
   setOccluded: (v: boolean) => void;
+  setAppearance: (appearance: Appearance) => void;
   worldHeightCm: number;
 };
+
+const REGION_COLOR: Record<AppearanceRegion, keyof Appearance> = {
+  upper: "upperColor",
+  lower: "lowerColor",
+  footwear: "footwearColor",
+  accent: "accentColor",
+};
+
+function colorToNumber(color: string | null): number {
+  if (!color) return 0xffffff;
+  const normalized = color.replace("#", "");
+  return Number.parseInt(normalized.length === 3 ? normalized.split("").map((c) => c + c).join("") : normalized, 16) || 0xffffff;
+}
 
 /** 1.6m 身高的人在透视系数=1 时的基准屏幕像素高度 */
 const BASE_PX = 150;
@@ -57,17 +78,22 @@ export function Stage25DView() {
         const textures = new Map<string, Texture | null>();
         const perfs = useEditorStore.getState().performers;
         const textureUrls = new Set<string>();
-        const directionUrl = (p: Performer) => {
+        const assetsFor = (p: Performer) => {
           const id = p.spriteId ?? resolveSpriteId({ gender: p.gender });
-          const m = getSpriteManifest(id);
-          if (!m) return null;
-          if (p.direction < -20) return m.directions.frontLeft ?? m.directions.front;
-          if (p.direction > 20) return m.directions.frontRight ?? m.directions.front;
-          return m.directions.front;
+          const manifest = getSpriteManifest(id);
+          return manifest ? { manifest, ...resolveSpriteAssets(manifest, p.direction) } : null;
         };
         for (const p of perfs) {
-          const url = directionUrl(p);
-          if (url) textureUrls.add(url);
+          const assets = assetsFor(p);
+          if (!assets) continue;
+          textureUrls.add(assets.image);
+          Object.entries(assets.masks).forEach(([region, url]) => {
+            if (url) {
+              textureUrls.add(url);
+            } else if (process.env.NODE_ENV !== "production") {
+              console.warn(`[StageOS 2.5D] ${assets.manifest.spriteId}/${assets.direction} 缺少 ${region} 遮罩,该区域将保留原画颜色。`);
+            }
+          });
         }
         for (const url of textureUrls) {
           try {
@@ -84,10 +110,10 @@ export function Stage25DView() {
           container.eventMode = "static";
           container.cursor = "pointer";
 
-          const spriteId = p.spriteId ?? resolveSpriteId({ gender: p.gender });
-          const manifest = spriteId ? getSpriteManifest(spriteId) : null;
-          const url = directionUrl(p);
-          const tex = url ? textures.get(url) : null;
+          const assets = assetsFor(p);
+          const manifest = assets?.manifest ?? null;
+          const tex = assets ? textures.get(assets.image) : null;
+          const overlays = new Map<AppearanceRegion, Sprite>();
 
           // 选中光圈
           const ring = new PIXI.Graphics();
@@ -96,21 +122,36 @@ export function Stage25DView() {
           const worldHeightCm = manifest?.worldHeightCm ?? p.heightCm;
           // 归一化:1.6m 的人在透视系数=1 时约占 BASE_PX 像素高,按实际身高等比缩放
           const bodyPx = BASE_PX * (worldHeightCm / 160);
-          if (manifest && tex) {
+          if (manifest && tex && assets) {
             const sprite = new PIXI.Sprite(tex);
             sprite.anchor.set(manifest.anchor.x, manifest.anchor.y);
             // 纹理原生高度可能上千像素,按目标身高像素归一化到 bodyPx
             sprite.scale.set(bodyPx / (tex.height || bodyPx));
             sprite.label = "body";
             container.addChild(sprite);
+
+            // 灰度遮罩与底图同锚点、同缩放叠放；只给对应服装区域着色，保留原图明暗。
+            for (const region of Object.keys(REGION_COLOR) as AppearanceRegion[]) {
+              const maskUrl = assets.masks[region];
+              const maskTexture = maskUrl ? textures.get(maskUrl) : null;
+              if (!maskTexture) continue;
+              const overlay = new PIXI.Sprite(maskTexture);
+              overlay.anchor.set(manifest.anchor.x, manifest.anchor.y);
+              overlay.scale.set(bodyPx / (maskTexture.height || bodyPx));
+              overlay.blendMode = "multiply";
+              overlay.alpha = 0.82;
+              overlay.label = `mask-${region}`;
+              overlays.set(region, overlay);
+              container.addChild(overlay);
+            }
           } else {
             // 占位:半透明柱 + 问号,明确提示素材缺失
             const g = new PIXI.Graphics();
-            g.roundRect(-bodyPx * 0.15, -bodyPx, bodyPx * 0.3, bodyPx, 6).fill({ color: spriteId ? 0x3aa89e : 0x6b7280, alpha: 0.55 });
+            g.roundRect(-bodyPx * 0.15, -bodyPx, bodyPx * 0.3, bodyPx, 6).fill({ color: manifest ? 0x3aa89e : 0x6b7280, alpha: 0.55 });
             g.label = "placeholder";
             container.addChild(g);
             const t = new PIXI.Text({
-              text: spriteId ? "…" : "无素材",
+              text: manifest ? "素材缺失" : "无素材",
               style: { fontSize: 11, fill: 0xffffff },
             });
             t.anchor.set(0.5, 0.5);
@@ -138,8 +179,16 @@ export function Stage25DView() {
             ring.clear();
             if (v) ring.ellipse(0, -2, rr * 0.9, rr * 0.45).stroke({ width: 2.5, color: 0xe5484d });
           };
+          const setAppearance = (appearance: Appearance) => {
+            for (const [region, overlay] of overlays) {
+              const color = appearance[REGION_COLOR[region]];
+              overlay.tint = colorToNumber(color);
+              overlay.visible = Boolean(color);
+            }
+          };
+          setAppearance(p.appearance);
           world.addChild(container);
-          return { container, setSelected, setOccluded, worldHeightCm };
+          return { container, setSelected, setOccluded, setAppearance, worldHeightCm };
         };
 
         for (const p of perfs) nodes.set(p.id, buildNode(p));
@@ -188,7 +237,8 @@ export function Stage25DView() {
             node.container.scale.set(scale);
             node.container.zIndex = zi++;
             node.setSelected(p.id === selectedId);
-            if (occlusions.has(p.id)) node.setOccluded(true);
+            node.setOccluded(occlusions.has(p.id));
+            node.setAppearance(p.appearance);
           }
           world.sortableChildren = true;
         };
