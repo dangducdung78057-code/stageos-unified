@@ -56,18 +56,24 @@ export function Stage25DView() {
         // 预加载出现过的精灵纹理(失败不阻塞,回退占位)
         const textures = new Map<string, Texture | null>();
         const perfs = useEditorStore.getState().performers;
-        const spriteIds = new Set<string>();
-        for (const p of perfs) {
-          const id = resolveSpriteId({ gender: p.gender });
-          if (id) spriteIds.add(id);
-        }
-        for (const id of spriteIds) {
+        const textureUrls = new Set<string>();
+        const directionUrl = (p: Performer) => {
+          const id = p.spriteId ?? resolveSpriteId({ gender: p.gender });
           const m = getSpriteManifest(id);
-          if (!m) continue;
+          if (!m) return null;
+          if (p.direction < -20) return m.directions.frontLeft ?? m.directions.front;
+          if (p.direction > 20) return m.directions.frontRight ?? m.directions.front;
+          return m.directions.front;
+        };
+        for (const p of perfs) {
+          const url = directionUrl(p);
+          if (url) textureUrls.add(url);
+        }
+        for (const url of textureUrls) {
           try {
-            textures.set(id, await PIXI.Assets.load(m.directions.front));
+            textures.set(url, await PIXI.Assets.load(url));
           } catch {
-            textures.set(id, null); // 加载失败 → 占位
+            textures.set(url, null); // 加载失败 → 占位
           }
         }
         if (disposed) return;
@@ -78,9 +84,10 @@ export function Stage25DView() {
           container.eventMode = "static";
           container.cursor = "pointer";
 
-          const spriteId = resolveSpriteId({ gender: p.gender });
+          const spriteId = p.spriteId ?? resolveSpriteId({ gender: p.gender });
           const manifest = spriteId ? getSpriteManifest(spriteId) : null;
-          const tex = spriteId ? textures.get(spriteId) : null;
+          const url = directionUrl(p);
+          const tex = url ? textures.get(url) : null;
 
           // 选中光圈
           const ring = new PIXI.Graphics();

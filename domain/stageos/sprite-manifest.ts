@@ -36,11 +36,20 @@ export const spriteManifestSchema = z.object({
   anchor: z.object({ x: z.number().min(0).max(1), y: z.number().min(0).max(1) }),
   directions: directionSchema,
   masks: masksSchema.default(() => masksSchema.parse({})),
-  /** 素材是否为占位图(真实素材接入后置 false) */
+  /** 素材状态:development 仅开发预览;production 必须具备三方向和四类遮罩 */
+  assetStatus: z.enum(["development", "production"]).default("development"),
+  /** 兼容旧字段;正式素材接入后置 false */
   placeholder: z.boolean().default(true),
 });
 
 export type SpriteManifest = z.infer<typeof spriteManifestSchema>;
+
+/** 正式素材必须具备三方向与四类换色遮罩;开发素材允许缺失并由渲染器降级。 */
+export function isProductionReady(manifest: SpriteManifest): boolean {
+  return manifest.assetStatus === "production"
+    && Boolean(manifest.directions.front && manifest.directions.frontLeft && manifest.directions.frontRight)
+    && Boolean(manifest.masks.upper && manifest.masks.lower && manifest.masks.footwear && manifest.masks.accent);
+}
 
 const BASE = "/assets/stage-2.5d/characters";
 
@@ -66,6 +75,7 @@ const PRIMARY_GIRL_BASIC_WHITE: SpriteManifest = spriteManifestSchema.parse({
     footwear: null,
     accent: null,
   },
+  assetStatus: "development",
   placeholder: true,
 });
 
@@ -86,6 +96,7 @@ const PRIMARY_BOY_BASIC_WHITE: SpriteManifest = spriteManifestSchema.parse({
     frontRight: `${BASE}/primary-boy/basic-white/front-right.png`,
   },
   masks: { upper: null, lower: null, footwear: null, accent: null },
+  assetStatus: "development",
   placeholder: true,
 });
 

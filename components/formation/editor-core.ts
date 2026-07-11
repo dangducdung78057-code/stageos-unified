@@ -41,6 +41,17 @@ export type Performer = {
   z: number;
   /** 台阶层级:0 为舞台地面(2.5D/3D 共用,草图忽略高度) */
   riserLevel: number;
+  groupId: string | null;
+  roleLabel: string | null;
+  direction: number;
+  spriteId: string | null;
+  appearance: {
+    outfitId: string | null;
+    upperColor: string;
+    lowerColor: string;
+    footwearColor: string;
+    accentColor: string | null;
+  };
 };
 
 export type Keyframe = { time: number; positions: Record<string, [number, number]> };
@@ -85,7 +96,23 @@ export function buildRoster(): Omit<Performer, "x" | "z" | "riserLevel">[] {
     else gender = i % 2 === 0 ? "male" : "female";
     if (gender === "male") males--;
     else females--;
-    list.push({ id: `S${String(i + 1).padStart(2, "0")}`, gender, heightCm: pseudoHeight(i) });
+    const spriteId = resolveSpriteId({ gender });
+    list.push({
+      id: `S${String(i + 1).padStart(2, "0")}`,
+      gender,
+      heightCm: pseudoHeight(i),
+      groupId: gender === "female" ? "声部-A" : "声部-B",
+      roleLabel: i === 0 ? "领唱" : "队员",
+      direction: 0,
+      spriteId,
+      appearance: {
+        outfitId: "basic-white",
+        upperColor: "#f4f2ed",
+        lowerColor: "#e8e5df",
+        footwearColor: "#ffffff",
+        accentColor: null,
+      },
+    });
   }
   list.sort((a, b) => b.heightCm - a.heightCm);
   return list.map((p, i) => ({ ...p, id: `S${String(i + 1).padStart(2, "0")}` }));
@@ -367,7 +394,19 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     const costume = d.costumeName ? (COSTUME_PALETTES.find((p) => p.name === d.costumeName) ?? null) : null;
     set({
       ...withOcclusions(
-        d.performers.map((p) => ({ id: p.id, gender: p.gender, heightCm: p.heightCm, x: p.x, z: p.z, riserLevel: p.riserLevel ?? 0 })),
+        d.performers.map((p) => ({
+          id: p.id,
+          gender: p.gender,
+          heightCm: p.heightCm,
+          x: p.x,
+          z: p.z,
+          riserLevel: p.riserLevel,
+          groupId: p.groupId,
+          roleLabel: p.roleLabel,
+          direction: p.direction,
+          spriteId: p.spriteId,
+          appearance: p.appearance,
+        })),
       ),
       activePreset: d.formationPreset,
       spacing: d.spacing,
@@ -401,24 +440,23 @@ export function snapshotScene(s: EditorState): StageSceneData {
       x: p.x,
       z: p.z,
       riserLevel: p.riserLevel,
-      groupId: null,
-      roleLabel: null,
-      direction: 0,
-      spriteId: resolveSpriteId({ gender: p.gender }),
-      appearance: {
-        outfitId: s.costume?.name ?? null,
-        upperColor: s.themeColor,
-        lowerColor: "#22262e",
-        footwearColor: "#ffffff",
-        accentColor: null,
-      },
+      groupId: p.groupId,
+      roleLabel: p.roleLabel,
+      direction: p.direction,
+      spriteId: p.spriteId,
+      appearance: p.appearance,
     })),
     keyframes: s.keyframes,
-    movementPaths: {},
+    movementPaths: Object.fromEntries(
+      s.performers.map((p) => [
+        p.id,
+        s.keyframes.map((kf) => kf.positions[p.id] ?? [p.x, p.z]),
+      ]),
+    ),
     stage: {
       width: BOUND_X * 2,
       depth: BOUND_Z * 2,
-      riserLevels: 0,
+      riserLevels: Math.max(0, ...s.performers.map((p) => p.riserLevel)),
       backgroundId: null,
       ledConfig: { enabled: s.lightMode === "led", contentId: null },
       props: [],

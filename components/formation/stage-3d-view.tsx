@@ -3,7 +3,7 @@
 "use client";
 
 import { Suspense, useMemo, useRef } from "react";
-import { Canvas, useThree, useFrame, type ThreeEvent } from "@react-three/fiber";
+import { Canvas, useFrame, type ThreeEvent } from "@react-three/fiber";
 import { OrbitControls, Grid, Html, Line } from "@react-three/drei";
 import * as THREE from "three";
 import { StageLighting } from "@/components/StageLighting";
@@ -34,7 +34,6 @@ function PerformerFigure({ p, occludedBy }: { p: Performer; occludedBy?: string 
   const setDragging = useEditorStore((s) => s.setDragging);
   const move = useEditorStore((s) => s.move);
   const playing = useEditorStore((s) => s.playing);
-  const { gl } = useThree();
   const dragging = useRef(false);
   const hitPoint = useRef(new THREE.Vector3());
 
@@ -59,7 +58,6 @@ function PerformerFigure({ p, occludedBy }: { p: Performer; occludedBy?: string 
     dragging.current = true;
     setDragging(p.id);
     (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
-    gl.domElement.style.cursor = "grabbing";
   };
   const onMove = (e: ThreeEvent<PointerEvent>) => {
     if (!dragging.current) return;
@@ -73,7 +71,6 @@ function PerformerFigure({ p, occludedBy }: { p: Performer; occludedBy?: string 
     e.stopPropagation();
     dragging.current = false;
     setDragging(null);
-    gl.domElement.style.cursor = "auto";
   };
 
   return (
