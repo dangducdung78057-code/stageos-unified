@@ -30,3 +30,15 @@ export const stageInputs = pgTable("stageInputs", {
   id: uuid("id").primaryKey().defaultRandom(), userId: text("userId").notNull(), projectId: uuid("projectId").notNull(),
   data: jsonb("data").notNull().default({}), createdAt: timestamp("createdAt").notNull().defaultNow(), updatedAt: timestamp("updatedAt").notNull().defaultNow(),
 })
+export const planSnapshots = pgTable("planSnapshots", {
+  id: uuid("id").primaryKey().defaultRandom(), userId: text("userId").notNull(), projectId: uuid("projectId").notNull(),
+  version: integer("version").notNull().default(1), mode: text("mode").notNull().default("local_rules"),
+  costumePlan: jsonb("costumePlan").notNull().default({}), risks: jsonb("risks").notNull().default([]),
+  reverseSchedule: jsonb("reverseSchedule").notNull().default([]), platformSearch: jsonb("platformSearch").notNull().default([]),
+  providerStatus: text("providerStatus").notNull().default("local_rules_ready"), createdAt: timestamp("createdAt").notNull().defaultNow(),
+})
+export const confirmationRecords = pgTable("confirmationRecords", {
+  id: uuid("id").primaryKey().defaultRandom(), userId: text("userId").notNull(), projectId: uuid("projectId").notNull(),
+  status: text("status").notNull().default("draft"), note: text("note"),
+  createdAt: timestamp("createdAt").notNull().defaultNow(), updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+})
