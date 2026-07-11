@@ -100,20 +100,42 @@ const PRIMARY_GIRL_BASIC_WHITE: SpriteManifest = spriteManifestSchema.parse({
   gender: "female",
   outfitId: "basic-white",
   worldHeightCm: 140,
-  imageWidth: 256,
-  imageHeight: 512,
-  anchor: { x: 0.5, y: 1 },
+  imageWidth: 1024,
+  imageHeight: 1536,
+  // 包内 footBaselineY=1450，锚点必须落在真实脚底而非透明画布底边。
+  anchor: { x: 0.5, y: 1450 / 1536 },
   directions: {
-    front: `${BASE}/primary-girl/basic-white/front.png`,
-    frontLeft: `${BASE}/primary-girl/basic-white/front-left.png`,
-    frontRight: `${BASE}/primary-girl/basic-white/front-right.png`,
+    front: `${BASE}/primary-girl/basic-white/front.webp`,
+    frontLeft: `${BASE}/primary-girl/basic-white/front-left.webp`,
+    frontRight: `${BASE}/primary-girl/basic-white/front-right.webp`,
   },
   masks: {
-    upper: `${BASE}/primary-girl/basic-white/mask-upper.png`,
-    lower: `${BASE}/primary-girl/basic-white/mask-lower.png`,
-    footwear: null,
-    accent: null,
+    upper: `${BASE}/primary-girl/basic-white/masks/upper-front.png`,
+    lower: `${BASE}/primary-girl/basic-white/masks/lower-front.png`,
+    footwear: `${BASE}/primary-girl/basic-white/masks/footwear-front.png`,
+    accent: `${BASE}/primary-girl/basic-white/masks/accent-front.png`,
   },
+  directionMasks: {
+    front: {
+      upper: `${BASE}/primary-girl/basic-white/masks/upper-front.png`,
+      lower: `${BASE}/primary-girl/basic-white/masks/lower-front.png`,
+      footwear: `${BASE}/primary-girl/basic-white/masks/footwear-front.png`,
+      accent: `${BASE}/primary-girl/basic-white/masks/accent-front.png`,
+    },
+    frontLeft: {
+      upper: `${BASE}/primary-girl/basic-white/masks/upper-front-left.png`,
+      lower: `${BASE}/primary-girl/basic-white/masks/lower-front-left.png`,
+      footwear: `${BASE}/primary-girl/basic-white/masks/footwear-front-left.png`,
+      accent: `${BASE}/primary-girl/basic-white/masks/accent-front-left.png`,
+    },
+    frontRight: {
+      upper: `${BASE}/primary-girl/basic-white/masks/upper-front-right.png`,
+      lower: `${BASE}/primary-girl/basic-white/masks/lower-front-right.png`,
+      footwear: `${BASE}/primary-girl/basic-white/masks/footwear-front-right.png`,
+      accent: `${BASE}/primary-girl/basic-white/masks/accent-front-right.png`,
+    },
+  },
+  // 候选素材先进入真实 Pixi 验收；全部通过后才切换 production/false。
   assetStatus: "development",
   placeholder: true,
 });

@@ -1,3 +1,5 @@
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { canUsePreview, getEntitlements } from "./entitlements";
 import {
@@ -82,6 +84,20 @@ describe("Sprite Manifest", () => {
 
   it("开发占位素材状态明确", () => {
     expect(getSpriteManifest("primary-girl-basic-white")?.placeholder).toBe(true);
+  });
+
+  it("候选包三方向与十二张遮罩全部落盘且保持待验收", () => {
+    const base = resolve(process.cwd(), "public/assets/stage-2.5d/characters/primary-girl/basic-white");
+    const candidateManifest = JSON.parse(readFileSync(resolve(base, "manifest.json"), "utf8"));
+    const files = [
+      "front.webp", "front-left.webp", "front-right.webp",
+      ...["front", "front-left", "front-right"].flatMap((view) =>
+        ["upper", "lower", "footwear", "accent"].map((region) => `masks/${region}-${view}.png`),
+      ),
+    ];
+    expect(files).toHaveLength(15);
+    expect(files.every((file) => existsSync(resolve(base, file)))).toBe(true);
+    expect(candidateManifest.productionReady).toBe(false);
   });
 
   it("开发素材不得冒充正式素材", () => {
