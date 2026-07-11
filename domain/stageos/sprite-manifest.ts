@@ -30,6 +30,13 @@ export const directionMasksSchema = z.object({
 export type SpriteDirection = "front" | "frontLeft" | "frontRight";
 export type AppearanceRegion = keyof z.infer<typeof masksSchema>;
 
+const regionsSchema = z.object({
+  upper: z.object({ enabled: z.boolean() }).default({ enabled: true }),
+  lower: z.object({ enabled: z.boolean() }).default({ enabled: true }),
+  footwear: z.object({ enabled: z.boolean() }).default({ enabled: true }),
+  accent: z.object({ enabled: z.boolean() }).default({ enabled: true }),
+}).default(() => ({ upper: { enabled: true }, lower: { enabled: true }, footwear: { enabled: true }, accent: { enabled: true } }));
+
 export const spriteManifestSchema = z.object({
   characterId: z.string(),
   spriteId: z.string(),
@@ -47,7 +54,9 @@ export const spriteManifestSchema = z.object({
   /** 兼容早期单方向遮罩;正式素材必须使用 directionMasks。 */
   masks: masksSchema.default(() => masksSchema.parse({})),
   directionMasks: directionMasksSchema.nullable().default(null),
-  /** 素材状态:development 仅开发预览;production 必须具备三方向和四类遮罩 */
+  /** 每个服装区域可独立禁用；禁用区域不要求遮罩，也不参与渲染、UI 或持久化。 */
+  regions: regionsSchema,
+  /** 素材状态:development 仅开发预览;production 必须具备三方向和所有已启用区域遮罩 */
   assetStatus: z.enum(["development", "production"]).default("development"),
   /** 兼容旧字段;正式素材接入后置 false */
   placeholder: z.boolean().default(true),
@@ -57,7 +66,8 @@ export type SpriteManifest = z.infer<typeof spriteManifestSchema>;
 
 /** 正式素材必须具备三方向与四类换色遮罩;开发素材允许缺失并由渲染器降级。 */
 export function isProductionReady(manifest: SpriteManifest): boolean {
-  const complete = (m: z.infer<typeof masksSchema>) => Boolean(m.upper && m.lower && m.footwear && m.accent);
+  const complete = (m: z.infer<typeof masksSchema>) =>
+    (Object.keys(manifest.regions) as AppearanceRegion[]).every((region) => !manifest.regions[region].enabled || Boolean(m[region]));
   return manifest.assetStatus === "production"
     && manifest.placeholder === false
     && Boolean(manifest.directions.front && manifest.directions.frontLeft && manifest.directions.frontRight)
@@ -75,11 +85,22 @@ export function resolveSpriteDirection(direction: number): SpriteDirection {
 /** 返回某方向的底图与四区遮罩;开发素材自动回退到兼容遮罩。 */
 export function resolveSpriteAssets(manifest: SpriteManifest, direction: number) {
   const key = resolveSpriteDirection(direction);
+  const sourceMasks = manifest.directionMasks?.[key] ?? manifest.masks;
+  const masks = Object.fromEntries(
+    (Object.keys(manifest.regions) as AppearanceRegion[]).map((region) => [
+      region,
+      manifest.regions[region].enabled ? sourceMasks[region] : null,
+    ]),
+  ) as z.infer<typeof masksSchema>;
   return {
     direction: key,
     image: manifest.directions[key] ?? manifest.directions.front,
-    masks: manifest.directionMasks?.[key] ?? manifest.masks,
+    masks,
   };
+}
+
+export function isAppearanceRegionEnabled(spriteId: string | null | undefined, region: AppearanceRegion): boolean {
+  return getSpriteManifest(spriteId)?.regions[region].enabled ?? false;
 }
 
 const BASE = "/assets/stage-2.5d/characters";
@@ -157,30 +178,31 @@ const PRIMARY_BOY_BASIC_WHITE: SpriteManifest = spriteManifestSchema.parse({
     frontLeft: `${BASE}/primary-boy/basic-white/preview/front-left.png`,
     frontRight: `${BASE}/primary-boy/basic-white/preview/front-right.png`,
   },
+  regions: { accent: { enabled: false } },
   masks: {
     upper: `${BASE}/primary-boy/basic-white/preview/masks/upper-front.png`,
     lower: `${BASE}/primary-boy/basic-white/preview/masks/lower-front.png`,
     footwear: `${BASE}/primary-boy/basic-white/preview/masks/footwear-front.png`,
-    accent: `${BASE}/primary-boy/basic-white/preview/masks/accent-front.png`,
+    accent: null,
   },
   directionMasks: {
     front: {
       upper: `${BASE}/primary-boy/basic-white/preview/masks/upper-front.png`,
       lower: `${BASE}/primary-boy/basic-white/preview/masks/lower-front.png`,
       footwear: `${BASE}/primary-boy/basic-white/preview/masks/footwear-front.png`,
-      accent: `${BASE}/primary-boy/basic-white/preview/masks/accent-front.png`,
+      accent: null,
     },
     frontLeft: {
       upper: `${BASE}/primary-boy/basic-white/preview/masks/upper-front-left.png`,
       lower: `${BASE}/primary-boy/basic-white/preview/masks/lower-front-left.png`,
       footwear: `${BASE}/primary-boy/basic-white/preview/masks/footwear-front-left.png`,
-      accent: `${BASE}/primary-boy/basic-white/preview/masks/accent-front-left.png`,
+      accent: null,
     },
     frontRight: {
       upper: `${BASE}/primary-boy/basic-white/preview/masks/upper-front-right.png`,
       lower: `${BASE}/primary-boy/basic-white/preview/masks/lower-front-right.png`,
       footwear: `${BASE}/primary-boy/basic-white/preview/masks/footwear-front-right.png`,
-      accent: `${BASE}/primary-boy/basic-white/preview/masks/accent-front-right.png`,
+      accent: null,
     },
   },
   assetStatus: "development",

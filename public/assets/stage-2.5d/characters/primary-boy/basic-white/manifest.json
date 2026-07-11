@@ -8,9 +8,16 @@
   "assetStatus": "development",
   "placeholder": true,
   "productionReady": false,
+  "regions": {
+    "upper": { "enabled": true },
+    "lower": { "enabled": true },
+    "footwear": { "enabled": true },
+    "accent": { "enabled": false }
+  },
   "productionBlockers": [
-    "accent masks are empty in all three directions",
-    "browser and save/restore acceptance pending"
+    "real PixiJS browser acceptance pending",
+    "save and refresh restore acceptance pending",
+    "remote CI result pending"
   ],
   "worldHeightCm": 142,
   "canvas": {
@@ -30,7 +37,7 @@
         "upper": "preview/masks/upper-front.png",
         "lower": "preview/masks/lower-front.png",
         "footwear": "preview/masks/footwear-front.png",
-        "accent": "preview/masks/accent-front.png"
+        "accent": null
       }
     },
     "frontLeft": {
@@ -39,7 +46,7 @@
         "upper": "preview/masks/upper-front-left.png",
         "lower": "preview/masks/lower-front-left.png",
         "footwear": "preview/masks/footwear-front-left.png",
-        "accent": "preview/masks/accent-front-left.png"
+        "accent": null
       }
     },
     "frontRight": {
@@ -48,7 +55,7 @@
         "upper": "preview/masks/upper-front-right.png",
         "lower": "preview/masks/lower-front-right.png",
         "footwear": "preview/masks/footwear-front-right.png",
-        "accent": "preview/masks/accent-front-right.png"
+        "accent": null
       }
     }
   }

@@ -10,7 +10,7 @@ import { FORMATION_COMPUTES, gridPositions } from "@/lib/formationLayouts";
 import { SCENE_SCHEMA_VERSION } from "@/domain/stageos/scene";
 import type { StageSceneData } from "@/domain/stageos/scene";
 import type { PreviewMode } from "@/domain/stageos/types";
-import { resolveSpriteId } from "@/domain/stageos/sprite-manifest";
+import { isAppearanceRegionEnabled, resolveSpriteId } from "@/domain/stageos/sprite-manifest";
 
 // ---------- 常量 ----------
 
@@ -50,11 +50,18 @@ export type Performer = {
     upperColor: string;
     lowerColor: string;
     footwearColor: string;
-    accentColor: string | null;
+    accentColor?: string | null;
   };
 };
 
 export type Keyframe = { time: number; positions: Record<string, [number, number]> };
+
+export function sanitizeAppearance(spriteId: string | null, appearance: Performer["appearance"]): Performer["appearance"] {
+  const { accentColor, ...requiredColors } = appearance;
+  return isAppearanceRegionEnabled(spriteId, "accent")
+    ? { ...requiredColors, accentColor: accentColor ?? null }
+    : requiredColors;
+}
 
 // ---------- 颜色/身高工具 ----------
 
@@ -405,7 +412,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
           roleLabel: p.roleLabel,
           direction: p.direction,
           spriteId: p.spriteId,
-          appearance: p.appearance,
+          appearance: sanitizeAppearance(p.spriteId, p.appearance),
         })),
       ),
       activePreset: d.formationPreset,
@@ -444,7 +451,7 @@ export function snapshotScene(s: EditorState): StageSceneData {
       roleLabel: p.roleLabel,
       direction: p.direction,
       spriteId: p.spriteId,
-      appearance: p.appearance,
+      appearance: sanitizeAppearance(p.spriteId, p.appearance),
     })),
     keyframes: s.keyframes,
     movementPaths: Object.fromEntries(

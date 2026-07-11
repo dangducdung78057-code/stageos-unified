@@ -12,6 +12,7 @@ import {
   spriteManifestSchema,
 } from "./sprite-manifest";
 import { parseSceneData, stageSceneSchema } from "./scene";
+import { sanitizeAppearance } from "@/components/formation/editor-core";
 
 const baseScene = {
   schemaVersion: 2 as const,
@@ -61,6 +62,17 @@ describe("场景项目隔离与迁移", () => {
     };
     const restored = stageSceneSchema.parse({ ...baseScene, performers: [performer] }).performers[0];
     expect(restored).toEqual(performer);
+  });
+
+  it("禁用 accent 后保存省略颜色，旧数据恢复时安全忽略", () => {
+    const legacyAppearance = {
+      outfitId: "basic-white", upperColor: "#111111", lowerColor: "#222222",
+      footwearColor: "#333333", accentColor: "#ff0000",
+    };
+    expect(sanitizeAppearance("primary-boy-basic-white", legacyAppearance)).toEqual({
+      outfitId: "basic-white", upperColor: "#111111", lowerColor: "#222222", footwearColor: "#333333",
+    });
+    expect(sanitizeAppearance("primary-girl-basic-white", legacyAppearance).accentColor).toBe("#ff0000");
   });
 
   it("旧版场景迁移到 schemaVersion 2", () => {
@@ -117,15 +129,17 @@ describe("Sprite Manifest", () => {
     });
   });
 
-  it("男生 Preview 候选完整落盘但空 accent 阻止晋级", () => {
+  it("男生 Preview 仅校验启用区域，禁用 accent 不阻止晋级", () => {
     const root = resolve(process.cwd(), "public/assets/stage-2.5d/characters/primary-boy/basic-white");
     const candidateManifest = JSON.parse(readFileSync(resolve(root, "manifest.json"), "utf8"));
-    const referencedFiles = Object.values(candidateManifest.views).flatMap((view) => [
-      (view as { image: string }).image,
-      ...Object.values((view as { masks: Record<string, string> }).masks),
-    ]);
-    expect(referencedFiles).toHaveLength(15);
-    expect(referencedFiles.every((file) => existsSync(resolve(root, file as string)))).toBe(true);
+    const referencedFiles = Object.values(candidateManifest.views).flatMap((view) => {
+      const typedView = view as { image: string; masks: Record<string, string | null> };
+      return [typedView.image, ...Object.entries(typedView.masks)
+        .filter(([region]) => candidateManifest.regions[region].enabled)
+        .map(([, file]) => file)];
+    });
+    expect(referencedFiles).toHaveLength(12);
+    expect(referencedFiles.every((file) => typeof file === "string" && existsSync(resolve(root, file)))).toBe(true);
     expect(candidateManifest).toMatchObject({
       spriteId: "primary-boy-basic-white",
       assetStatus: "development",
@@ -134,9 +148,14 @@ describe("Sprite Manifest", () => {
       worldHeightCm: 142,
       canvas: { width: 1024, height: 1536, footBaselineY: 1449, anchorY: 1449 / 1536 },
     });
-    expect(candidateManifest.productionBlockers).toContain("accent masks are empty in all three directions");
-    const runtime = getSpriteManifest("primary-boy-basic-white");
-    expect(runtime && isProductionReady(runtime)).toBe(false);
+    expect(candidateManifest.regions.accent.enabled).toBe(false);
+    expect(Object.values(candidateManifest.views).every((view) => (view as { masks: { accent: null } }).masks.accent === null)).toBe(true);
+    expect(candidateManifest.productionBlockers).not.toContain("accent masks are empty in all three directions");
+    const runtime = getSpriteManifest("primary-boy-basic-white")!;
+    expect(runtime.regions.accent.enabled).toBe(false);
+    expect(Object.values(runtime.directionMasks ?? {}).every((masks) => masks.accent === null)).toBe(true);
+    expect(resolveSpriteAssets(runtime, 0).masks.accent).toBeNull();
+    expect(isProductionReady(runtime)).toBe(false);
   });
 
   it("开发素材不得冒充正式素材", () => {
@@ -160,6 +179,19 @@ describe("Sprite Manifest", () => {
     });
     expect(isProductionReady(production)).toBe(true);
     expect(PRODUCTION_ASSET_FILES).toHaveLength(15);
+  });
+
+  it("生产校验仅要求已启用区域", () => {
+    const masks = { upper: "/u.png", lower: "/l.png", footwear: "/f.png", accent: null };
+    const production = spriteManifestSchema.parse({
+      characterId: "optional-test", spriteId: "optional-test", ageSegment: "primary", gender: "male",
+      outfitId: "basic-white", worldHeightCm: 142, imageWidth: 1024, imageHeight: 1536,
+      anchor: { x: 0.5, y: 1 }, regions: { accent: { enabled: false } },
+      directions: { front: "/front.png", frontLeft: "/left.png", frontRight: "/right.png" },
+      masks, directionMasks: { front: masks, frontLeft: masks, frontRight: masks },
+      assetStatus: "production", placeholder: false,
+    });
+    expect(isProductionReady(production)).toBe(true);
   });
 
   it("方向与对应遮罩解析稳定", () => {

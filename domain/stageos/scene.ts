@@ -11,7 +11,7 @@ const appearanceSchema = z.object({
   upperColor: z.string().default("#3aa89e"),
   lowerColor: z.string().default("#22262e"),
   footwearColor: z.string().default("#ffffff"),
-  accentColor: z.string().nullable().default(null),
+  accentColor: z.string().nullable().optional(),
 })
 
 const performerSchema = z.object({

@@ -31,7 +31,7 @@ const REGION_COLOR: Record<AppearanceRegion, keyof Appearance> = {
   accent: "accentColor",
 };
 
-function colorToNumber(color: string | null): number {
+function colorToNumber(color: string | null | undefined): number {
   if (!color) return 0xffffff;
   const normalized = color.replace("#", "");
   return Number.parseInt(normalized.length === 3 ? normalized.split("").map((c) => c + c).join("") : normalized, 16) || 0xffffff;
@@ -194,7 +194,7 @@ export function Stage25DView() {
 
         for (const p of perfs) nodes.set(p.id, buildNode(p));
 
-        // 拖拽:世界坐标反投影回舞台坐标
+        // 拖拽：世界坐标反投影回舞台坐标
         const toStage = (px: number, py: number) => {
           const w = app!.renderer.width / app!.renderer.resolution;
           const h = app!.renderer.height / app!.renderer.resolution;
