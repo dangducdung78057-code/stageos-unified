@@ -42,7 +42,7 @@ describe("跨渲染器坐标约定", () => {
     expect(pixi).toContain("resolveSpriteAssets(manifest, p.direction)");
     expect(pixi).toContain("assets.masks[region]");
     expect(pixi).toContain("node.setAppearance(p.appearance)");
-    expect(pixi).toContain('overlay.blendMode = "multiply"');
+    expect(pixi).toContain('overlay.blendMode = "normal"');
   });
 
   it("Canvas PNG 导出生成下载链接且不是空实现", () => {

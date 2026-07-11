@@ -86,17 +86,19 @@ describe("Sprite Manifest", () => {
     expect(getSpriteManifest("primary-girl-basic-white")?.placeholder).toBe(true);
   });
 
-  it("候选包三方向与十二张遮罩全部落盘且保持待验收", () => {
-    const base = resolve(process.cwd(), "public/assets/stage-2.5d/characters/primary-girl/basic-white");
-    const candidateManifest = JSON.parse(readFileSync(resolve(base, "manifest.json"), "utf8"));
+  it("Preview 三方向与十二张独立遮罩全部落盘且保持待验收", () => {
+    const root = resolve(process.cwd(), "public/assets/stage-2.5d/characters/primary-girl/basic-white");
+    const base = resolve(root, "preview");
+    const candidateManifest = JSON.parse(readFileSync(resolve(root, "manifest.json"), "utf8"));
     const files = [
-      "front.webp", "front-left.webp", "front-right.webp",
+      "front.png", "front-left.png", "front-right.png",
       ...["front", "front-left", "front-right"].flatMap((view) =>
         ["upper", "lower", "footwear", "accent"].map((region) => `masks/${region}-${view}.png`),
       ),
     ];
     expect(files).toHaveLength(15);
     expect(files.every((file) => existsSync(resolve(base, file)))).toBe(true);
+    expect(existsSync(resolve(base, "masks/masks-preview-sheet.png"))).toBe(false);
     expect(candidateManifest.productionReady).toBe(false);
   });
 

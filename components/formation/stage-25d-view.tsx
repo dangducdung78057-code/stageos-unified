@@ -138,7 +138,8 @@ export function Stage25DView() {
               const overlay = new PIXI.Sprite(maskTexture);
               overlay.anchor.set(manifest.anchor.x, manifest.anchor.y);
               overlay.scale.set(bodyPx / (maskTexture.height || bodyPx));
-              overlay.blendMode = "multiply";
+              // 候选 mask 为纯白二值 Alpha；使用普通叠加 + tint，避免 multiply 产生矩形伪影。
+              overlay.blendMode = "normal";
               overlay.alpha = 0.82;
               overlay.label = `mask-${region}`;
               overlays.set(region, overlay);
