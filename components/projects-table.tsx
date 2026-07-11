@@ -38,12 +38,10 @@ export function ProjectsTable({ rows }: { rows: Row[] }) {
           <h1 className="text-xl font-semibold">项目</h1>
           <p className="text-sm text-muted-foreground">全部演出服装排产项目。</p>
         </div>
-        <Button asChild size="sm">
-          <Link href="/projects/new">
-            <Plus className="mr-1 size-4" />
-            新建项目 · 向导
-          </Link>
-        </Button>
+        <Link href="/projects/new" className="inline-flex h-8 items-center gap-1 bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary/90">
+          <Plus className="size-4" />
+          新建项目 · 向导
+        </Link>
       </div>
       <div className="panel">
         <div className="flex items-center justify-between border-b px-4 py-3">

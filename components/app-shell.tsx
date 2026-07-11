@@ -37,7 +37,7 @@ function Sidebar({ close }: { close?: () => void }) {
   </div>
 }
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({ children, userName }: { children: React.ReactNode; userName?: string }) {
   const [open, setOpen] = useState(false)
   return <div className="flex min-h-dvh bg-background">
     <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 border-r lg:block"><Sidebar /></aside>
@@ -46,7 +46,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <header className="sticky top-0 z-20 flex h-12 items-center border-b bg-background/95 px-4 backdrop-blur md:px-6">
         <button type="button" className="mr-3 lg:hidden" onClick={() => setOpen(true)} aria-label="打开导航"><Menu className="size-5" /></button>
         <div className="eyebrow">PRODUCTION CONTROL / CHINA</div>
-        <div className="ml-auto flex items-center gap-3"><span className="hidden font-mono text-[10px] text-muted-foreground sm:inline">11 JUL 2026</span><span className="border border-border px-2 py-1 font-mono text-[10px]">MODE: LIVE</span></div>
+        <div className="ml-auto flex items-center gap-3">{userName && <span className="hidden text-xs text-muted-foreground sm:inline">{userName}</span>}<span className="border border-border px-2 py-1 font-mono text-[10px]">MODE: LIVE</span></div>
       </header>
       <main>{children}</main>
     </div>

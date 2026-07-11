@@ -174,7 +174,7 @@ export function ProjectWizard() {
             </div>
             <div className="space-y-1.5">
               <Label>学段</Label>
-              <Select value={data.schoolStage ?? ""} onValueChange={(v) => set("schoolStage", v)}>
+              <Select value={data.schoolStage ?? ""} onValueChange={(v) => set("schoolStage", v ?? undefined)}>
                 <SelectTrigger><SelectValue placeholder="选择学段" /></SelectTrigger>
                 <SelectContent>
                   {SCHOOL_STAGES.map((s) => (
@@ -185,7 +185,7 @@ export function ProjectWizard() {
             </div>
             <div className="space-y-1.5">
               <Label>节目类型 *</Label>
-              <Select value={data.programType ?? ""} onValueChange={(v) => set("programType", v)}>
+              <Select value={data.programType ?? ""} onValueChange={(v) => set("programType", v ?? undefined)}>
                 <SelectTrigger><SelectValue placeholder="选择节目类型" /></SelectTrigger>
                 <SelectContent>
                   {PROGRAM_TYPES.map((p) => (
