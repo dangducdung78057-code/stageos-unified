@@ -117,6 +117,28 @@ describe("Sprite Manifest", () => {
     });
   });
 
+  it("男生 Preview 候选完整落盘但空 accent 阻止晋级", () => {
+    const root = resolve(process.cwd(), "public/assets/stage-2.5d/characters/primary-boy/basic-white");
+    const candidateManifest = JSON.parse(readFileSync(resolve(root, "manifest.json"), "utf8"));
+    const referencedFiles = Object.values(candidateManifest.views).flatMap((view) => [
+      (view as { image: string }).image,
+      ...Object.values((view as { masks: Record<string, string> }).masks),
+    ]);
+    expect(referencedFiles).toHaveLength(15);
+    expect(referencedFiles.every((file) => existsSync(resolve(root, file as string)))).toBe(true);
+    expect(candidateManifest).toMatchObject({
+      spriteId: "primary-boy-basic-white",
+      assetStatus: "development",
+      placeholder: true,
+      productionReady: false,
+      worldHeightCm: 142,
+      canvas: { width: 1024, height: 1536, footBaselineY: 1449, anchorY: 1449 / 1536 },
+    });
+    expect(candidateManifest.productionBlockers).toContain("accent masks are empty in all three directions");
+    const runtime = getSpriteManifest("primary-boy-basic-white");
+    expect(runtime && isProductionReady(runtime)).toBe(false);
+  });
+
   it("开发素材不得冒充正式素材", () => {
     const manifest = getSpriteManifest("primary-girl-basic-white");
     expect(() => spriteManifestSchema.parse(manifest)).not.toThrow();
