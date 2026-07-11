@@ -16,6 +16,9 @@ type Node = {
   worldHeightCm: number;
 };
 
+/** 1.6m 身高的人在透视系数=1 时的基准屏幕像素高度 */
+const BASE_PX = 150;
+
 export function Stage25DView() {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [status, setStatus] = useState<string>("正在加载 2.5D 渲染器…");
@@ -83,16 +86,20 @@ export function Stage25DView() {
           const ring = new PIXI.Graphics();
           container.addChild(ring);
 
-          let worldHeightCm = manifest?.worldHeightCm ?? p.heightCm;
+          const worldHeightCm = manifest?.worldHeightCm ?? p.heightCm;
+          // 归一化:1.6m 的人在透视系数=1 时约占 BASE_PX 像素高,按实际身高等比缩放
+          const bodyPx = BASE_PX * (worldHeightCm / 160);
           if (manifest && tex) {
             const sprite = new PIXI.Sprite(tex);
             sprite.anchor.set(manifest.anchor.x, manifest.anchor.y);
+            // 纹理原生高度可能上千像素,按目标身高像素归一化到 bodyPx
+            sprite.scale.set(bodyPx / (tex.height || bodyPx));
             sprite.label = "body";
             container.addChild(sprite);
           } else {
             // 占位:半透明柱 + 问号,明确提示素材缺失
             const g = new PIXI.Graphics();
-            g.roundRect(-18, -120, 36, 120, 6).fill({ color: spriteId ? 0x3aa89e : 0x6b7280, alpha: 0.55 });
+            g.roundRect(-bodyPx * 0.15, -bodyPx, bodyPx * 0.3, bodyPx, 6).fill({ color: spriteId ? 0x3aa89e : 0x6b7280, alpha: 0.55 });
             g.label = "placeholder";
             container.addChild(g);
             const t = new PIXI.Text({
@@ -100,13 +107,13 @@ export function Stage25DView() {
               style: { fontSize: 11, fill: 0xffffff },
             });
             t.anchor.set(0.5, 0.5);
-            t.position.set(0, -60);
+            t.position.set(0, -bodyPx * 0.5);
             container.addChild(t);
           }
 
-          const label = new PIXI.Text({ text: p.id, style: { fontSize: 12, fill: 0xdfe7ef } });
+          const label = new PIXI.Text({ text: p.id, style: { fontSize: 11, fill: 0xdfe7ef } });
           label.anchor.set(0.5, 1);
-          label.position.set(0, -125);
+          label.position.set(0, -bodyPx - 6);
           container.addChild(label);
 
           container.on("pointerdown", (e) => {
@@ -115,13 +122,14 @@ export function Stage25DView() {
             dragId = p.id;
           });
 
+          const rr = Math.max(14, bodyPx * 0.16);
           const setSelected = (v: boolean) => {
             ring.clear();
-            if (v) ring.circle(0, -6, 22).stroke({ width: 3, color: 0x3aa89e });
+            if (v) ring.ellipse(0, -2, rr, rr * 0.5).stroke({ width: 2.5, color: 0x3aa89e });
           };
           const setOccluded = (v: boolean) => {
             ring.clear();
-            if (v) ring.circle(0, -6, 18).stroke({ width: 3, color: 0xe5484d });
+            if (v) ring.ellipse(0, -2, rr * 0.9, rr * 0.45).stroke({ width: 2.5, color: 0xe5484d });
           };
           world.addChild(container);
           return { container, setSelected, setOccluded, worldHeightCm };

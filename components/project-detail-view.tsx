@@ -268,9 +268,9 @@ export function ProjectDetailView({
                   <p className="mt-1 text-xs text-muted-foreground">{plan.visualPlan.formation.summary}</p>
                   <p className="mt-1 font-mono text-[10px] text-muted-foreground">{plan.visualPlan.formation.spacingRule}</p>
                   <div className="mt-3">
-                    <Link href={`/formation-3d?count=${project.performerCount ?? 24}`} className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
+                    <Link href={`/formation-3d?projectId=${project.id}&count=${project.performerCount ?? 24}`} className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
                       <Box className="size-3.5" />
-                      在 3D 编队中预览
+                      在编队中预览与保存
                     </Link>
                   </div>
                 </div>

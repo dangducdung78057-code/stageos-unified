@@ -69,8 +69,29 @@ const PRIMARY_GIRL_BASIC_WHITE: SpriteManifest = spriteManifestSchema.parse({
   placeholder: true,
 });
 
+/** 首批测试人物:小学男生 · 基础白色服装 */
+const PRIMARY_BOY_BASIC_WHITE: SpriteManifest = spriteManifestSchema.parse({
+  characterId: "primary-boy",
+  spriteId: "primary-boy-basic-white",
+  ageSegment: "primary",
+  gender: "male",
+  outfitId: "basic-white",
+  worldHeightCm: 142,
+  imageWidth: 256,
+  imageHeight: 512,
+  anchor: { x: 0.5, y: 1 },
+  directions: {
+    front: `${BASE}/primary-boy/basic-white/front.png`,
+    frontLeft: `${BASE}/primary-boy/basic-white/front-left.png`,
+    frontRight: `${BASE}/primary-boy/basic-white/front-right.png`,
+  },
+  masks: { upper: null, lower: null, footwear: null, accent: null },
+  placeholder: true,
+});
+
 export const SPRITE_MANIFESTS: Record<string, SpriteManifest> = {
   [PRIMARY_GIRL_BASIC_WHITE.spriteId]: PRIMARY_GIRL_BASIC_WHITE,
+  [PRIMARY_BOY_BASIC_WHITE.spriteId]: PRIMARY_BOY_BASIC_WHITE,
 };
 
 export function getSpriteManifest(spriteId: string | null | undefined): SpriteManifest | null {
@@ -84,6 +105,8 @@ export function getSpriteManifest(spriteId: string | null | undefined): SpriteMa
  */
 export function resolveSpriteId(p: { gender: "male" | "female"; ageSegment?: AgeSegment }): string | null {
   const age = p.ageSegment ?? "primary";
-  if (p.gender === "female" && age === "primary") return "primary-girl-basic-white";
+  if (age === "primary") {
+    return p.gender === "female" ? "primary-girl-basic-white" : "primary-boy-basic-white";
+  }
   return null;
 }

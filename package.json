@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "check:encoding": "node scripts/check-encoding.mjs",
+    "typecheck": "tsc --noEmit",
+    "verify": "node scripts/check-encoding.mjs && tsc --noEmit && next build"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
