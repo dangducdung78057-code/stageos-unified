@@ -118,7 +118,7 @@ export function StudentGlbModel({
       });
     }
     return cloned;
-  }, [scene, heightM, colors.top, colors.bottom, colors.accent]);
+  }, [scene, heightM, colors]);
 
   // 选中时轻微自发光提示(MeshToonMaterial 支持 emissive)
   useEffect(() => {

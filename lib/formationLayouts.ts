@@ -89,12 +89,10 @@ export const diamondPositions: FormationCompute = (n, spacing) => {
   const dec = stack.slice(half).reverse();
   rows.push(...inc, ...dec);
   const out: [number, number][] = [];
-  let idx = 0;
   const total = rows.length;
   rows.forEach((cnt, r) => {
     const z = 4 - (r / Math.max(1, total - 1)) * 8;
     out.push(...rowLine(cnt, z, spacing * 0.95));
-    idx += cnt;
   });
   return out.slice(0, n);
 };
@@ -128,9 +126,8 @@ export const staggeredTwoRowPositions: FormationCompute = (n, spacing) => {
 };
 
 // 8. 斜线破格式:贯穿舞台的对角斜线
-export const diagonalPositions: FormationCompute = (n, spacing) => {
+export const diagonalPositions: FormationCompute = (n, _spacing) => {
   const out: [number, number][] = [];
-  const s = Math.min(spacing * 1.1, 16 / Math.max(1, n - 1));
   for (let i = 0; i < n; i++) {
     const t = n > 1 ? i / (n - 1) : 0.5;
     out.push([-8 + t * 16, 4.5 - t * 9]);

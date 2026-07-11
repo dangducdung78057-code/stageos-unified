@@ -6,7 +6,7 @@ import { formationScenes, formationSceneVersions, projects, user } from "@/lib/d
 import { getEntitlements } from "@/domain/stageos/entitlements"
 import { isMemberRenderMode, parseSceneData, type StageSceneData } from "@/domain/stageos/scene"
 import type { MembershipTier } from "@/domain/stageos/types"
-import { and, asc, desc, eq, isNull, lt, sql, type SQL } from "drizzle-orm"
+import { and, asc, eq, isNull, lt, sql, type SQL } from "drizzle-orm"
 import { headers } from "next/headers"
 
 export type { StageSceneData } from "@/domain/stageos/scene"

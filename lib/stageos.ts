@@ -159,7 +159,7 @@ export type PlanItem = {
 };
 
 export type Risk = { level: "low" | "medium" | "high"; title: string; detail: string };
-export type ScheduleItem = { daysBefore: number; task: string; owner: string };
+export type ScheduleItem = { daysBefore: number; task: string; owner: string; date?: string };
 export type PlatformSearchItem = { platform: string; query: string; url: string; note: string };
 
 export function validateStageInputDetailed(data: StageInputData): { errors: string[]; warnings: string[] } {

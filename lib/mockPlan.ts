@@ -108,7 +108,7 @@ export function generateMockPlan(input: StageInputData): {
     reverseSchedule.forEach((s) => {
       const d = new Date(perfDate);
       d.setDate(d.getDate() - s.daysBefore);
-      (s as any).date = d.toISOString().slice(0, 10);
+      s.date = d.toISOString().slice(0, 10);
     });
   }
 
