@@ -96,10 +96,25 @@ describe("Sprite Manifest", () => {
         ["upper", "lower", "footwear", "accent"].map((region) => `masks/${region}-${view}.png`),
       ),
     ];
+    const referencedFiles = Object.values(candidateManifest.views).flatMap((view) => [
+      (view as { image: string }).image,
+      ...Object.values((view as { masks: Record<string, string> }).masks),
+    ]);
     expect(files).toHaveLength(15);
     expect(files.every((file) => existsSync(resolve(base, file)))).toBe(true);
+    expect(referencedFiles).toHaveLength(15);
+    expect(referencedFiles.every((file) => existsSync(resolve(root, file as string)))).toBe(true);
+    expect(referencedFiles.every((file) => String(file).startsWith("preview/"))).toBe(true);
     expect(existsSync(resolve(base, "masks/masks-preview-sheet.png"))).toBe(false);
-    expect(candidateManifest.productionReady).toBe(false);
+    expect(candidateManifest).toMatchObject({
+      assetVersion: "preview-20260711-1",
+      spriteId: "primary-girl-basic-white",
+      assetStatus: "development",
+      placeholder: true,
+      productionReady: false,
+      worldHeightCm: 140,
+      canvas: { width: 1024, height: 1536, footBaselineY: 1449, anchorX: 0.5, anchorY: 1449 / 1536 },
+    });
   });
 
   it("开发素材不得冒充正式素材", () => {
