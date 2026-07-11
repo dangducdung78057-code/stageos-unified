@@ -30,7 +30,7 @@ const performerSchema = z.object({
   direction: z.number().default(0),
   /** 2.5D 精灵素材 ID */
   spriteId: z.string().nullable().default(null),
-  appearance: appearanceSchema.default({}),
+  appearance: appearanceSchema.default(() => appearanceSchema.parse({})),
 })
 
 const stageSchema = z.object({
@@ -38,7 +38,7 @@ const stageSchema = z.object({
   depth: z.number().positive().default(10),
   riserLevels: z.number().int().min(0).default(0),
   backgroundId: z.string().nullable().default(null),
-  ledConfig: z.object({ enabled: z.boolean().default(false), contentId: z.string().nullable().default(null) }).default({}),
+  ledConfig: z.object({ enabled: z.boolean().default(false), contentId: z.string().nullable().default(null) }).default(() => ({ enabled: false, contentId: null })),
   props: z.array(z.object({ id: z.string(), kind: z.string(), x: z.number(), z: z.number(), rotation: z.number().default(0) })).default([]),
 })
 
@@ -64,8 +64,8 @@ export const stageSceneSchema = z.object({
   keyframes: z.array(keyframeSchema).default([]),
   /** 走位路径:performerId → 路径点序列 */
   movementPaths: z.record(z.string(), z.array(z.tuple([z.number(), z.number()]))).default({}),
-  stage: stageSchema.default({}),
-  lighting: lightingSchema.default({}),
+  stage: stageSchema.default(() => stageSchema.parse({})),
+  lighting: lightingSchema.default(() => lightingSchema.parse({})),
   costumeName: z.string().nullable().default(null),
   males: z.number().int().min(0),
   females: z.number().int().min(0),
