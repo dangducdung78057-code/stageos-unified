@@ -13,7 +13,9 @@ import type { ColorPalette } from "@/lib/stageKnowledge";
 import { FORMATION_COMPUTES, gridPositions, type FormationCompute } from "@/lib/formationLayouts";
 import * as THREE from "three";
 import { create } from "zustand";
-import { saveFormationScene, loadFormationScene, type FormationSceneData } from "@/app/actions/formation";
+import { saveFormationScene, loadFormationScene, listSceneVersions, restoreSceneVersion, type StageSceneData } from "@/app/actions/formation";
+import { SCENE_SCHEMA_VERSION } from "@/domain/stageos/scene";
+import type { PreviewMode } from "@/domain/stageos/types";
 import {
   LayoutGrid,
   Circle as CircleIcon,
@@ -276,8 +278,11 @@ type EditorState = {
   timeOfDay: number;
   setFieldType: (f: FieldType) => void;
   setTimeOfDay: (t: number) => void;
+  /** 统一渲染模式:黑点草图 / 2.5D / 3D 共用同一份状态,只切换 renderer */
+  renderMode: PreviewMode;
+  setRenderMode: (m: PreviewMode) => void;
   /** 用云端场景数据整体恢复编辑器状态 */
-  hydrate: (d: FormationSceneData) => void;
+  hydrate: (d: StageSceneData) => void;
 };
 
 function clampSnap(v: number, bound: number, snap: boolean): number {
@@ -404,19 +409,22 @@ const useEditorStore = create<EditorState>((set, get) => ({
       playing: false,
     });
   },
+  renderMode: "stage-3d" as PreviewMode,
+  setRenderMode: (m) => set({ renderMode: m }),
   hydrate: (d) => {
     rosterConfig = { males: Math.max(0, d.males), females: Math.max(0, d.females) };
     const costume = d.costumeName ? (COSTUME_PALETTES.find((p) => p.name === d.costumeName) ?? null) : null;
     set({
-      ...withOcclusions(d.performers),
-      activePreset: d.activePreset,
+      ...withOcclusions(d.performers.map((p) => ({ id: p.id, gender: p.gender, heightCm: p.heightCm, x: p.x, z: p.z }))),
+      activePreset: d.formationPreset,
       spacing: d.spacing,
       keyframes: d.keyframes,
-      lightMode: d.lightMode,
-      themeColor: d.themeColor,
+      renderMode: d.renderMode,
+      lightMode: d.lighting.mode,
+      themeColor: d.lighting.themeColor,
       costume,
-      fieldType: d.fieldType,
-      timeOfDay: d.timeOfDay,
+      fieldType: d.lighting.fieldType,
+      timeOfDay: d.lighting.timeOfDay,
       selectedId: null,
       currentTime: 0,
       playing: false,
@@ -424,18 +432,38 @@ const useEditorStore = create<EditorState>((set, get) => ({
   },
 }));
 
-/** 将当前编辑器状态序列化为云端场景数据 */
-function snapshotScene(s: EditorState): FormationSceneData {
+/** 将当前编辑器状态序列化为统一场景数据(schemaVersion 2,三种渲染模式共用) */
+function snapshotScene(s: EditorState): StageSceneData {
   return {
-    performers: s.performers.map((p) => ({ id: p.id, gender: p.gender, heightCm: p.heightCm, x: p.x, z: p.z })),
-    activePreset: s.activePreset,
+    schemaVersion: SCENE_SCHEMA_VERSION as 2,
+    projectId: null,
+    renderMode: s.renderMode,
+    formationPreset: s.activePreset,
     spacing: s.spacing,
+    performers: s.performers.map((p) => ({
+      id: p.id,
+      gender: p.gender,
+      heightCm: p.heightCm,
+      x: p.x,
+      z: p.z,
+      riserLevel: 0,
+      groupId: null,
+      roleLabel: null,
+      direction: 0,
+      spriteId: null,
+      appearance: {
+        outfitId: s.costume?.name ?? null,
+        upperColor: s.themeColor,
+        lowerColor: "#22262e",
+        footwearColor: "#ffffff",
+        accentColor: null,
+      },
+    })),
     keyframes: s.keyframes,
-    lightMode: s.lightMode,
-    themeColor: s.themeColor,
+    movementPaths: {},
+    stage: { width: BOUND_X * 2, depth: BOUND_Z * 2, riserLevels: 0, backgroundId: null, ledConfig: { enabled: s.lightMode === "led", contentId: null }, props: [] },
+    lighting: { mode: s.lightMode, themeColor: s.themeColor, fieldType: s.fieldType, timeOfDay: s.timeOfDay },
     costumeName: s.costume?.name ?? null,
-    fieldType: s.fieldType,
-    timeOfDay: s.timeOfDay,
     males: rosterConfig.males,
     females: rosterConfig.females,
   };
@@ -837,19 +865,33 @@ function FormationsPanel() {
   );
 }
 
-/** 云端保存/恢复:整个场景(站位坐标、队形、渲染模式、时间轴)写入 Neon */
+/** 云端保存/恢复:统一场景数据写入 Neon,每次保存生成不可变新版本 */
 function CloudSyncSection() {
   const [status, setStatus] = useState<string>("");
   const [busy, setBusy] = useState(false);
+  const [versions, setVersions] = useState<{ version: number; createdAt: string }[]>([]);
+  const [current, setCurrent] = useState(0);
+
+  const refreshVersions = async () => {
+    try {
+      const res = await listSceneVersions("default");
+      setVersions(res.versions.slice(-5).reverse());
+      setCurrent(res.current);
+    } catch {
+      // 未登录时静默
+    }
+  };
 
   const save = async () => {
     setBusy(true);
     setStatus("保存中…");
     try {
       const res = await saveFormationScene("default", snapshotScene(useEditorStore.getState()));
-      setStatus(res.updated ? "已覆盖保存到云端" : "已保存到云端");
-    } catch {
-      setStatus("保存失败,请先登录");
+      setStatus(`已保存为版本 v${res.version}`);
+      await refreshVersions();
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "";
+      setStatus(msg.startsWith("membership_required") ? "该能力需要会员,保存被服务端拒绝" : "保存失败,请先登录");
     } finally {
       setBusy(false);
     }
@@ -864,10 +906,27 @@ function CloudSyncSection() {
         setStatus("云端暂无保存的场景");
       } else {
         useEditorStore.getState().hydrate(scene.data);
-        setStatus(`已恢复 ${new Date(scene.updatedAt).toLocaleTimeString("zh-CN")} 的云端场景`);
+        setStatus(`已恢复当前版本 v${scene.version}`);
+        await refreshVersions();
       }
     } catch {
       setStatus("恢复失败,请先登录");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const restoreVersion = async (v: number) => {
+    setBusy(true);
+    setStatus(`恢复 v${v} 中…`);
+    try {
+      const res = await restoreSceneVersion("default", v);
+      useEditorStore.getState().hydrate(res.data);
+      setStatus(`已将 v${v} 恢复为当前版本(新版本 v${res.version})`);
+      await refreshVersions();
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "";
+      setStatus(msg.startsWith("membership_required") ? "多版本历史为会员能力" : "版本恢复失败");
     } finally {
       setBusy(false);
     }
@@ -898,6 +957,23 @@ function CloudSyncSection() {
         <p aria-live="polite" className="mt-2 text-[11px] text-[#9fb3c8]">
           {status}
         </p>
+      ) : null}
+      {versions.length > 0 ? (
+        <div className="mt-2 flex flex-col gap-1">
+          <span className="text-[10px] text-[#6b7683]">历史版本(当前 v{current})</span>
+          {versions.map((v) => (
+            <button
+              key={v.version}
+              type="button"
+              disabled={busy || v.version === current}
+              onClick={() => restoreVersion(v.version)}
+              className="flex items-center justify-between rounded bg-[#262b34] px-2 py-1 text-left text-[10px] text-[#9fb3c8] transition-colors hover:bg-[#2c323d] disabled:opacity-50"
+            >
+              <span>v{v.version}{v.version === current ? " · 当前" : ""}</span>
+              <span className="font-mono">{new Date(v.createdAt).toLocaleTimeString("zh-CN")}</span>
+            </button>
+          ))}
+        </div>
       ) : null}
     </div>
   );
@@ -1315,7 +1391,7 @@ function OcclusionPanel() {
 
 // ---------- 可嵌入编辑器 ----------
 
-/** 可嵌入的 3D 队形编辑器:放入任意 relative 容器��可,支持传入真实男���人数 */
+/** 可嵌入的 3D 队形编辑器:放入任意 relative 容器即可,支持传入真实男女人数 */
 export function Formation3DEditor({
   maleCount,
   femaleCount,
@@ -1335,6 +1411,9 @@ export function Formation3DEditor({
     }
   }, [maleCount, femaleCount, setRoster]);
 
+  const renderMode = useEditorStore((s) => s.renderMode);
+  const setRenderMode = useEditorStore((s) => s.setRenderMode);
+
   return (
     <div className={cn("relative h-full w-full overflow-hidden bg-[#181b21] font-sans", className)}>
       <FormationsPanel />
@@ -1342,13 +1421,70 @@ export function Formation3DEditor({
       <TimelinePanel />
       <OcclusionPanel />
       <div className="absolute inset-0 z-0">
-        <Canvas shadows dpr={dpr} camera={{ position: [0, 11, 15], fov: 45 }}>
-          <StageScene />
-        </Canvas>
+        {renderMode === "dot-sketch" ? (
+          <DotSketchView />
+        ) : (
+          <Canvas shadows dpr={dpr} camera={{ position: [0, 11, 15], fov: 45 }}>
+            <StageScene />
+          </Canvas>
+        )}
       </div>
-      <div className="pointer-events-none absolute top-6 left-1/2 z-10 -translate-x-1/2 rounded-full border border-[#2b303b] bg-[#1d2027]/90 px-5 py-2 text-xs whitespace-nowrap text-[#9fb3c8] backdrop-blur">
-        拖拽人物调整站位 · 选中查看动线轨迹 · 红环 = 被评委视线遮挡
+      <div className="pointer-events-none absolute top-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2">
+        <div className="pointer-events-auto flex rounded-full border border-[#2b303b] bg-[#1d2027]/90 p-1 backdrop-blur">
+          {([["dot-sketch", "黑点草图"], ["stage-3d", "3D 舞台"]] as [PreviewMode, string][]).map(([m, label]) => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => setRenderMode(m)}
+              className={cn(
+                "rounded-full px-3 py-1 text-[11px] font-medium transition-colors",
+                renderMode === m ? "bg-[#3aa89e] text-[#0f1115]" : "text-[#9fb3c8] hover:text-[#f0f3f6]",
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <span className="rounded-full border border-[#2b303b] bg-[#1d2027]/90 px-4 py-1.5 text-[11px] whitespace-nowrap text-[#9fb3c8] backdrop-blur">
+          拖拽调整站位 · 红 = 视线遮挡
+        </span>
       </div>
+    </div>
+  );
+}
+
+/** 黑点草图渲染器(免费模式):与 3D 完全共用同一份 store 状态,只更换 renderer */
+function DotSketchView() {
+  const performers = useEditorStore((s) => s.performers);
+  const occlusions = useEditorStore((s) => s.occlusions);
+  const selectedId = useEditorStore((s) => s.selectedId);
+  const select = useEditorStore((s) => s.select);
+  const vw = 100;
+  const vh = 100;
+  const sx = (x: number) => ((x + BOUND_X) / (BOUND_X * 2)) * (vw - 16) + 8;
+  const sz = (z: number) => ((z + BOUND_Z) / (BOUND_Z * 2)) * (vh - 24) + 12;
+
+  return (
+    <div className="flex h-full w-full items-center justify-center bg-[#f5f3ee]">
+      <svg viewBox={`0 0 ${vw} ${vh}`} className="h-full max-h-full w-auto max-w-full" role="img" aria-label="黑点草图站位视图">
+        <rect x="6" y="10" width={vw - 12} height={vh - 20} fill="none" stroke="#22262e" strokeWidth="0.5" />
+        <text x={vw / 2} y={vh - 3} textAnchor="middle" fontSize="3.2" fill="#22262e">
+          观众席 / 评委方向
+        </text>
+        {performers.map((p) => (
+          <circle
+            key={p.id}
+            cx={sx(p.x)}
+            cy={sz(p.z)}
+            r={p.id === selectedId ? 2 : 1.5}
+            fill={occlusions.has(p.id) ? "#d24b43" : "#22262e"}
+            stroke={p.id === selectedId ? "#3aa89e" : "none"}
+            strokeWidth="0.6"
+            className="cursor-pointer"
+            onClick={() => select(p.id === selectedId ? null : p.id)}
+          />
+        ))}
+      </svg>
     </div>
   );
 }

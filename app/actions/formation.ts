@@ -2,53 +2,77 @@
 
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { formationScenes } from "@/lib/db/schema"
-import { and, desc, eq } from "drizzle-orm"
+import { formationScenes, formationSceneVersions, user } from "@/lib/db/schema"
+import { getEntitlements } from "@/domain/stageos/entitlements"
+import { isMemberRenderMode, parseSceneData, type StageSceneData } from "@/domain/stageos/scene"
+import type { MembershipTier } from "@/domain/stageos/types"
+import { and, asc, desc, eq, lt, sql } from "drizzle-orm"
 import { headers } from "next/headers"
 
-async function getUserId() {
+export type { StageSceneData } from "@/domain/stageos/scene"
+
+/** 读取当前登录用户 ID 与会员级别(服务端唯一可信来源) */
+async function getSessionUser(): Promise<{ userId: string; tier: MembershipTier }> {
   const session = await auth.api.getSession({ headers: await headers() })
   if (!session?.user) throw new Error("Unauthorized")
-  return session.user.id
+  const [row] = await db.select({ tier: user.membershipTier }).from(user).where(eq(user.id, session.user.id)).limit(1)
+  const tier = (row?.tier === "member" || row?.tier === "custom" ? row.tier : "free") as MembershipTier
+  return { userId: session.user.id, tier }
 }
 
-/** 3D 队形编辑器完整场景数据(performers 坐标、队形、渲染模式、时间轴等) */
-export type FormationSceneData = {
-  performers: { id: string; gender: "male" | "female"; heightCm: number; x: number; z: number }[]
-  activePreset: string
-  spacing: number
-  keyframes: { time: number; positions: Record<string, [number, number]> }[]
-  lightMode: "indoor" | "led" | "outdoor"
-  themeColor: string
-  costumeName: string | null
-  fieldType: "grass" | "track"
-  timeOfDay: number
-  males: number
-  females: number
-}
-
-/** 保存(同名覆盖)当前 3D 场景到 Neon,按 userId 隔离 */
-export async function saveFormationScene(name: string, data: FormationSceneData) {
-  const userId = await getUserId()
-  const existing = await db
-    .select({ id: formationScenes.id })
-    .from(formationScenes)
-    .where(and(eq(formationScenes.userId, userId), eq(formationScenes.name, name)))
-    .limit(1)
-  if (existing.length) {
-    await db
-      .update(formationScenes)
-      .set({ data, updatedAt: new Date() })
-      .where(and(eq(formationScenes.id, existing[0].id), eq(formationScenes.userId, userId)))
-    return { id: existing[0].id, updated: true }
+/** 服务端会员校验:2.5D/3D 场景、超额人数、多版本仅会员可用,不依赖前端隐藏按钮 */
+function assertEntitled(tier: MembershipTier, data: StageSceneData) {
+  const ent = getEntitlements(tier)
+  if (isMemberRenderMode(data.renderMode) && !ent.previewModes.includes(data.renderMode)) {
+    throw new Error(`membership_required:${data.renderMode}`)
   }
-  const [row] = await db.insert(formationScenes).values({ userId, name, data }).returning({ id: formationScenes.id })
-  return { id: row.id, updated: false }
+  if (data.performers.length > ent.maxPerformers) {
+    throw new Error(`performer_limit_exceeded:${ent.maxPerformers}`)
+  }
 }
 
-/** 读取当前用户最近保存的 3D 场景 */
+/**
+ * 保存场景:每次保存生成不可变新版本(v1/v2/v3…),场景行仅作为当前版本指针。
+ * 依赖数据库 unique(userId, projectId, name) 约束防止并发重复,而非“先查再插入”。
+ */
+export async function saveFormationScene(name: string, raw: unknown) {
+  const { userId, tier } = await getSessionUser()
+  const data = parseSceneData(raw)
+  assertEntitled(tier, data)
+  const ent = getEntitlements(tier)
+
+  return db.transaction(async (tx) => {
+    // 原子 upsert:并发同名保存会命中唯一索引并走 UPDATE 分支,不产生重复行
+    const [scene] = await tx
+      .insert(formationScenes)
+      .values({ userId, projectId: data.projectId, name, data, currentVersion: 1 })
+      .onConflictDoUpdate({
+        target: [formationScenes.userId, formationScenes.projectId, formationScenes.name],
+        set: { data, updatedAt: new Date(), currentVersion: sql`${formationScenes.currentVersion} + 1` },
+      })
+      .returning({ id: formationScenes.id, currentVersion: formationScenes.currentVersion })
+
+    await tx.insert(formationSceneVersions).values({ sceneId: scene.id, userId, version: scene.currentVersion, data })
+
+    // 免费版仅保留最近 maxSnapshots 个版本,会员不限
+    if (ent.maxSnapshots !== null) {
+      await tx
+        .delete(formationSceneVersions)
+        .where(
+          and(
+            eq(formationSceneVersions.sceneId, scene.id),
+            eq(formationSceneVersions.userId, userId),
+            lt(formationSceneVersions.version, scene.currentVersion - ent.maxSnapshots + 1),
+          ),
+        )
+    }
+    return { id: scene.id, version: scene.currentVersion }
+  })
+}
+
+/** 读取当前用户某场景的当前版本(旧 v1 数据自动迁移为 v2) */
 export async function loadFormationScene(name?: string) {
-  const userId = await getUserId()
+  const { userId, tier } = await getSessionUser()
   const rows = await db
     .select()
     .from(formationScenes)
@@ -60,5 +84,58 @@ export async function loadFormationScene(name?: string) {
     .orderBy(desc(formationScenes.updatedAt))
     .limit(1)
   if (!rows.length) return null
-  return { id: rows[0].id, name: rows[0].name, updatedAt: rows[0].updatedAt.toISOString(), data: rows[0].data as FormationSceneData }
+  const data = parseSceneData(rows[0].data)
+  assertEntitled(tier, data) // 免费用户不能读取会员级场景
+  return {
+    id: rows[0].id,
+    name: rows[0].name,
+    version: rows[0].currentVersion,
+    updatedAt: rows[0].updatedAt.toISOString(),
+    data,
+  }
+}
+
+/** 列出某场景的全部历史版本(仅版本号与时间,不含大字段) */
+export async function listSceneVersions(name: string) {
+  const { userId } = await getSessionUser()
+  const [scene] = await db
+    .select({ id: formationScenes.id, currentVersion: formationScenes.currentVersion })
+    .from(formationScenes)
+    .where(and(eq(formationScenes.userId, userId), eq(formationScenes.name, name)))
+    .limit(1)
+  if (!scene) return { current: 0, versions: [] as { version: number; createdAt: string }[] }
+  const versions = await db
+    .select({ version: formationSceneVersions.version, createdAt: formationSceneVersions.createdAt })
+    .from(formationSceneVersions)
+    .where(and(eq(formationSceneVersions.sceneId, scene.id), eq(formationSceneVersions.userId, userId)))
+    .orderBy(asc(formationSceneVersions.version))
+  return { current: scene.currentVersion, versions: versions.map((v) => ({ version: v.version, createdAt: v.createdAt.toISOString() })) }
+}
+
+/** 恢复历史版本:将该版本数据设为场景当前数据(会生成新版本,历史不可变) */
+export async function restoreSceneVersion(name: string, version: number) {
+  const { userId, tier } = await getSessionUser()
+  const ent = getEntitlements(tier)
+  if (ent.maxSnapshots !== null && ent.maxSnapshots <= 1) throw new Error("membership_required:version-history")
+  const [scene] = await db
+    .select({ id: formationScenes.id })
+    .from(formationScenes)
+    .where(and(eq(formationScenes.userId, userId), eq(formationScenes.name, name)))
+    .limit(1)
+  if (!scene) throw new Error("scene_not_found")
+  const [ver] = await db
+    .select({ data: formationSceneVersions.data })
+    .from(formationSceneVersions)
+    .where(
+      and(
+        eq(formationSceneVersions.sceneId, scene.id),
+        eq(formationSceneVersions.userId, userId),
+        eq(formationSceneVersions.version, version),
+      ),
+    )
+    .limit(1)
+  if (!ver) throw new Error("version_not_found")
+  const data = parseSceneData(ver.data)
+  const saved = await saveFormationScene(name, data)
+  return { ...saved, data }
 }

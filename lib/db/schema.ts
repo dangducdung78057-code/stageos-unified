@@ -1,8 +1,9 @@
-import { boolean, date, integer, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core"
+import { boolean, date, integer, jsonb, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core"
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(), name: text("name").notNull(), email: text("email").notNull().unique(),
   emailVerified: boolean("emailVerified").notNull().default(false), image: text("image"),
+  membershipTier: text("membershipTier").notNull().default("free"),
   createdAt: timestamp("createdAt").notNull().defaultNow(), updatedAt: timestamp("updatedAt").notNull().defaultNow(),
 })
 export const session = pgTable("session", {
@@ -42,8 +43,22 @@ export const confirmationRecords = pgTable("confirmationRecords", {
   status: text("status").notNull().default("draft"), note: text("note"),
   createdAt: timestamp("createdAt").notNull().defaultNow(), updatedAt: timestamp("updatedAt").notNull().defaultNow(),
 })
-export const formationScenes = pgTable("formationScenes", {
-  id: uuid("id").primaryKey().defaultRandom(), userId: text("userId").notNull(),
-  name: text("name").notNull().default("default"), data: jsonb("data").notNull().default({}),
-  createdAt: timestamp("createdAt").notNull().defaultNow(), updatedAt: timestamp("updatedAt").notNull().defaultNow(),
-})
+export const formationScenes = pgTable(
+  "formationScenes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(), userId: text("userId").notNull(), projectId: uuid("projectId"),
+    name: text("name").notNull().default("default"), data: jsonb("data").notNull().default({}),
+    currentVersion: integer("currentVersion").notNull().default(0),
+    createdAt: timestamp("createdAt").notNull().defaultNow(), updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("formationScenes_user_project_name_uq").on(t.userId, t.projectId, t.name)],
+)
+export const formationSceneVersions = pgTable(
+  "formationSceneVersions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(), sceneId: uuid("sceneId").notNull(), userId: text("userId").notNull(),
+    version: integer("version").notNull(), data: jsonb("data").notNull(),
+    createdAt: timestamp("createdAt").notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("formationSceneVersions_scene_version_uq").on(t.sceneId, t.version)],
+)
