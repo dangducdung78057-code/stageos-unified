@@ -5,20 +5,16 @@
   "spriteId": "primary-boy-basic-white",
   "variantId": "basic-white",
   "style": "2.5d-semi-realistic",
-  "assetStatus": "development",
-  "placeholder": true,
-  "productionReady": false,
+  "assetStatus": "production",
+  "placeholder": false,
+  "productionReady": true,
   "regions": {
     "upper": { "enabled": true },
     "lower": { "enabled": true },
     "footwear": { "enabled": true },
     "accent": { "enabled": false }
   },
-  "productionBlockers": [
-    "real PixiJS browser acceptance pending",
-    "save and refresh restore acceptance pending",
-    "remote CI result pending"
-  ],
+  "productionBlockers": [],
   "worldHeightCm": 142,
   "canvas": {
     "width": 1024,

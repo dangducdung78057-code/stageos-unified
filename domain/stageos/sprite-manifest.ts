@@ -205,8 +205,8 @@ const PRIMARY_BOY_BASIC_WHITE: SpriteManifest = spriteManifestSchema.parse({
       accent: null,
     },
   },
-  assetStatus: "development",
-  placeholder: true,
+  assetStatus: "production",
+  placeholder: false,
 });
 
 export const SPRITE_MANIFESTS: Record<string, SpriteManifest> = {

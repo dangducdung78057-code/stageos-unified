@@ -142,9 +142,9 @@ describe("Sprite Manifest", () => {
     expect(referencedFiles.every((file) => typeof file === "string" && existsSync(resolve(root, file)))).toBe(true);
     expect(candidateManifest).toMatchObject({
       spriteId: "primary-boy-basic-white",
-      assetStatus: "development",
-      placeholder: true,
-      productionReady: false,
+      assetStatus: "production",
+      placeholder: false,
+      productionReady: true,
       worldHeightCm: 142,
       canvas: { width: 1024, height: 1536, footBaselineY: 1449, anchorY: 1449 / 1536 },
     });
@@ -155,7 +155,7 @@ describe("Sprite Manifest", () => {
     expect(runtime.regions.accent.enabled).toBe(false);
     expect(Object.values(runtime.directionMasks ?? {}).every((masks) => masks.accent === null)).toBe(true);
     expect(resolveSpriteAssets(runtime, 0).masks.accent).toBeNull();
-    expect(isProductionReady(runtime)).toBe(false);
+    expect(isProductionReady(runtime)).toBe(true);
   });
 
   it("开发素材不得冒充正式素材", () => {
