@@ -4,13 +4,9 @@ import Link from 'next/link'
 import { ArrowRight, Box, CalendarDays, CircleAlert, Download, Plus, Users } from 'lucide-react'
 import { AppShell } from '@/components/app-shell'
 
-const projects = [
-  { id: 'spring-choir', title: '2026 春季合唱汇演', status: '方案确认', date: '2026-04-18', people: 48, progress: 82 },
-  { id: 'youth-dance', title: '青少年艺术节舞蹈', status: '排练中', date: '2026-05-06', people: 32, progress: 61 },
-  { id: 'graduation', title: '毕业季主题演出', status: '待修订', date: '2026-06-21', people: 76, progress: 34 },
-]
+type ProjectSummary = { id: string; title: string; status: string; performanceDate: string | null; performerCount: number | null }
 
-export function Dashboard() {
+export function Dashboard({ projects }: { projects: ProjectSummary[] }) {
   return <AppShell><div className="mx-auto max-w-[1500px] p-4 md:p-6">
     <section className="tech-grid border border-border p-5 md:p-8">
       <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
@@ -25,7 +21,7 @@ export function Dashboard() {
 
     <div className="mt-4 grid gap-4 xl:grid-cols-[1fr_340px]">
       <section className="panel min-w-0"><div className="flex items-center justify-between border-b px-4 py-3"><div><p className="eyebrow">ACTIVE PROJECTS</p><h2 className="mt-1 text-sm font-medium">近期制作项目</h2></div><Link href="/projects" className="flex items-center gap-1 text-xs text-primary">全部项目 <ArrowRight className="size-3" /></Link></div>
-        <div className="overflow-x-auto"><table className="w-full min-w-[640px] text-left text-sm"><thead className="text-[10px] uppercase tracking-widest text-muted-foreground"><tr>{['项目','状态','演出日期','人数','进度',''].map((h) => <th key={h} className="border-b px-4 py-3 font-normal">{h}</th>)}</tr></thead><tbody>{projects.map((p) => <tr key={p.id} className="group border-b last:border-0 hover:bg-secondary/40"><td className="px-4 py-4 font-medium">{p.title}</td><td className="px-4 py-4"><span className="border border-border px-2 py-1 text-xs">{p.status}</span></td><td className="px-4 py-4 font-mono text-xs text-muted-foreground">{p.date}</td><td className="px-4 py-4 font-mono">{p.people}</td><td className="px-4 py-4"><div className="flex items-center gap-2"><div className="h-1 w-20 bg-secondary"><div className="h-full bg-primary" style={{width:`${p.progress}%`}} /></div><span className="font-mono text-[10px]">{p.progress}%</span></div></td><td className="px-4 py-4"><Link href={`/projects/${p.id}`} aria-label={`查看${p.title}`}><ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" /></Link></td></tr>)}</tbody></table></div>
+        <div className="overflow-x-auto"><table className="w-full min-w-[640px] text-left text-sm"><thead className="text-[10px] uppercase tracking-widest text-muted-foreground"><tr>{['项目','状态','演出日期','人数','进度',''].map((h) => <th key={h} className="border-b px-4 py-3 font-normal">{h}</th>)}</tr></thead><tbody>{projects.length ? projects.map((p) => <tr key={p.id} className="group border-b last:border-0 hover:bg-secondary/40"><td className="px-4 py-4 font-medium">{p.title}</td><td className="px-4 py-4"><span className="border border-border px-2 py-1 text-xs">{p.status === 'draft' ? '草稿' : p.status}</span></td><td className="px-4 py-4 font-mono text-xs text-muted-foreground">{p.performanceDate ?? '待设置'}</td><td className="px-4 py-4 font-mono">{p.performerCount ?? '—'}</td><td className="px-4 py-4"><span className="font-mono text-[10px] text-muted-foreground">数据待完善</span></td><td className="px-4 py-4"><Link href={`/projects/${p.id}`} aria-label={`查看${p.title}`}><ArrowRight className="size-4 text-muted-foreground group-hover:text-primary" /></Link></td></tr>) : <tr><td colSpan={6} className="px-4 py-12 text-center text-sm text-muted-foreground">暂无项目。创建第一个制作项目后，进度会显示在这里。</td></tr>}</tbody></table></div>
       </section>
       <aside className="panel"><div className="border-b p-4"><p className="eyebrow">NEXT MILESTONES</p><h2 className="mt-1 text-sm font-medium">生产时间轴</h2></div><div className="p-4">{[['07/14','服装尺码复核'],['07/18','第一轮走台'],['07/22','灯光方案冻结'],['08/02','正式交付包']].map(([date,item],i)=><div key={item} className="flex gap-4 pb-5 last:pb-0"><div className="flex flex-col items-center"><span className="mt-1 size-2 bg-primary" />{i<3&&<span className="mt-1 h-full w-px bg-border" />}</div><div><div className="font-mono text-[10px] text-muted-foreground">{date}</div><div className="mt-1 text-sm">{item}</div></div></div>)}</div><Link href="/projects/spring-choir" className="flex items-center justify-between border-t p-4 text-xs hover:bg-secondary/40"><span className="flex items-center gap-2"><CalendarDays className="size-4 text-primary" />查看完整倒排计划</span><ArrowRight className="size-3" /></Link></aside>
     </div>
