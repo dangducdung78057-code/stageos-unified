@@ -2,7 +2,7 @@
 // 3D 队形编辑器:深色 UI + 3D 舞台网格 + 可拖拽人物代理。
 // 功能:点击选中、拖拽移动(自动吸附网格)、一键应用队形预设(方阵/弧形/圆形/V字/金字塔)、
 // 实时视线遮挡推演(评委视点 Occlusion Simulation)、关键帧时间轴动线推演(贝塞尔避让 + Ghost Trails)。
-import { Suspense, useEffect, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useThree, useFrame, type ThreeEvent } from "@react-three/fiber";
 import { OrbitControls, Grid, Html, Line } from "@react-three/drei";
 import { StageLighting, type LightMode } from "@/components/StageLighting";
@@ -13,6 +13,7 @@ import type { ColorPalette } from "@/lib/stageKnowledge";
 import { FORMATION_COMPUTES, gridPositions, type FormationCompute } from "@/lib/formationLayouts";
 import * as THREE from "three";
 import { create } from "zustand";
+import { saveFormationScene, loadFormationScene, type FormationSceneData } from "@/app/actions/formation";
 import {
   LayoutGrid,
   Circle as CircleIcon,
@@ -275,6 +276,8 @@ type EditorState = {
   timeOfDay: number;
   setFieldType: (f: FieldType) => void;
   setTimeOfDay: (t: number) => void;
+  /** 用云端场景数据整体恢复编辑器状态 */
+  hydrate: (d: FormationSceneData) => void;
 };
 
 function clampSnap(v: number, bound: number, snap: boolean): number {
@@ -401,7 +404,42 @@ const useEditorStore = create<EditorState>((set, get) => ({
       playing: false,
     });
   },
+  hydrate: (d) => {
+    rosterConfig = { males: Math.max(0, d.males), females: Math.max(0, d.females) };
+    const costume = d.costumeName ? (COSTUME_PALETTES.find((p) => p.name === d.costumeName) ?? null) : null;
+    set({
+      ...withOcclusions(d.performers),
+      activePreset: d.activePreset,
+      spacing: d.spacing,
+      keyframes: d.keyframes,
+      lightMode: d.lightMode,
+      themeColor: d.themeColor,
+      costume,
+      fieldType: d.fieldType,
+      timeOfDay: d.timeOfDay,
+      selectedId: null,
+      currentTime: 0,
+      playing: false,
+    });
+  },
 }));
+
+/** 将当前编辑器状态序列化为云端场景数据 */
+function snapshotScene(s: EditorState): FormationSceneData {
+  return {
+    performers: s.performers.map((p) => ({ id: p.id, gender: p.gender, heightCm: p.heightCm, x: p.x, z: p.z })),
+    activePreset: s.activePreset,
+    spacing: s.spacing,
+    keyframes: s.keyframes,
+    lightMode: s.lightMode,
+    themeColor: s.themeColor,
+    costumeName: s.costume?.name ?? null,
+    fieldType: s.fieldType,
+    timeOfDay: s.timeOfDay,
+    males: rosterConfig.males,
+    females: rosterConfig.females,
+  };
+}
 
 // ---------- 3D 场景 ----------
 
@@ -793,8 +831,75 @@ function FormationsPanel() {
         </div>
         <CostumeSection />
         <LightingSection />
+        <CloudSyncSection />
       </div>
     </Panel>
+  );
+}
+
+/** 云端保存/恢复:整个场景(站位坐标、队形、渲染模式、时间轴)写入 Neon */
+function CloudSyncSection() {
+  const [status, setStatus] = useState<string>("");
+  const [busy, setBusy] = useState(false);
+
+  const save = async () => {
+    setBusy(true);
+    setStatus("保存中…");
+    try {
+      const res = await saveFormationScene("default", snapshotScene(useEditorStore.getState()));
+      setStatus(res.updated ? "已覆盖保存到云端" : "已保存到云端");
+    } catch {
+      setStatus("保存失败,请先登录");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const restore = async () => {
+    setBusy(true);
+    setStatus("恢复中…");
+    try {
+      const scene = await loadFormationScene("default");
+      if (!scene) {
+        setStatus("云端暂无保存的场景");
+      } else {
+        useEditorStore.getState().hydrate(scene.data);
+        setStatus(`已恢复 ${new Date(scene.updatedAt).toLocaleTimeString("zh-CN")} 的云端场景`);
+      }
+    } catch {
+      setStatus("恢复失败,请先登录");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="mt-5 border-t border-[#2b303b] pt-4">
+      <span className="mb-2 block text-xs font-medium text-[#9fb3c8]">云端场景 (Neon)</span>
+      <div className="flex gap-1.5">
+        <button
+          type="button"
+          onClick={save}
+          disabled={busy}
+          className="flex-1 rounded-lg border border-[#3aa89e]/50 bg-[#3aa89e]/15 px-2 py-2 text-[11px] font-medium text-[#7fd4cb] transition-colors hover:bg-[#3aa89e]/25 disabled:opacity-50"
+        >
+          保存到云端
+        </button>
+        <button
+          type="button"
+          onClick={restore}
+          disabled={busy}
+          className="flex-1 rounded-lg bg-[#262b34] px-2 py-2 text-[11px] font-medium text-[#9fb3c8] transition-colors hover:bg-[#2c323d] disabled:opacity-50"
+        >
+          从云端恢复
+        </button>
+      </div>
+      {status ? (
+        <p aria-live="polite" className="mt-2 text-[11px] text-[#9fb3c8]">
+          {status}
+        </p>
+      ) : null}
+    </div>
   );
 }
 

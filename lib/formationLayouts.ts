@@ -316,6 +316,21 @@ export const ringLeadPositions: FormationCompute = (n, spacing) => {
   return out;
 };
 
+// 19. 心形环绕式:经典心形参数方程等分取点,尖端朝向观众
+export const heartPositions: FormationCompute = (n, spacing) => {
+  const out: [number, number][] = [];
+  // 按人数和人距推算心形整体缩放,保证相邻人距接近 spacing
+  const scale = Math.max(2.4, (n * spacing) / 21);
+  for (let i = 0; i < n; i++) {
+    const t = (i / n) * Math.PI * 2;
+    const hx = 16 * Math.pow(Math.sin(t), 3);
+    const hy = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+    // x 横向按 16 归一;z 纵向取负让尖端(hy 最小处)朝观众方向
+    out.push([(hx / 16) * scale, (-hy / 17) * scale]);
+  }
+  return out;
+};
+
 /** 队形名称 → 布局算法映射(与知识库 UNIVERSAL_FORMATIONS 名称一一对应) */
 export const FORMATION_COMPUTES: Record<string, FormationCompute> = {
   标准方阵式: gridPositions,
@@ -336,4 +351,5 @@ export const FORMATION_COMPUTES: Record<string, FormationCompute> = {
   扇形声部排列式: fanSectionPositions,
   景深三区戏剧式: threeZonePositions,
   环形领唱环绕式: ringLeadPositions,
+  心形环绕式: heartPositions,
 };

@@ -42,3 +42,8 @@ export const confirmationRecords = pgTable("confirmationRecords", {
   status: text("status").notNull().default("draft"), note: text("note"),
   createdAt: timestamp("createdAt").notNull().defaultNow(), updatedAt: timestamp("updatedAt").notNull().defaultNow(),
 })
+export const formationScenes = pgTable("formationScenes", {
+  id: uuid("id").primaryKey().defaultRandom(), userId: text("userId").notNull(),
+  name: text("name").notNull().default("default"), data: jsonb("data").notNull().default({}),
+  createdAt: timestamp("createdAt").notNull().defaultNow(), updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+})

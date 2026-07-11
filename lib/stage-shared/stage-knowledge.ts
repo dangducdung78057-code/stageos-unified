@@ -104,7 +104,7 @@ export const STAGE_KNOWLEDGE: ProgramKnowledge[] = [
       { name: "阶梯诵读式", summary: "三级台阶纵深布局,配合灯光分区亮起", rows: 3, spacingRule: "台阶落差 25cm,左右 70cm", countRange: [12, 36], tips: "适合章节式长诗,按段落分区起立。" },
     ],
     costumeStyles: [
-      { name: "白衣胜雪式", female: "白色长裙,红色披肩或飘带", male: "白衬衫 + 深色西裤 + 红围巾", accessories: ["红色胸花", "白手套(可选)"], moods: ["爱国", "庄重", "纪念"] },
+      { name: "白衣胜雪式", female: "白色长裙,红色披肩或飘带", male: "白衬衫 + 深色西裤 + 红围巾", accessories: ["红色胸花", "白手套(��选)"], moods: ["爱国", "庄重", "纪念"] },
       { name: "青衿书生式", female: "淡青襦裙,手持书卷", male: "月白长衫 + 折扇", accessories: ["书卷道具", "束发带"], moods: ["古诗词", "国学", "书香"] },
       { name: "正装主持式", female: "及膝礼服裙或西装套裙", male: "全套西装 + 领带", accessories: ["胸针", "口袋巾"], moods: ["主持", "礼仪", "晚会"] },
     ],
@@ -289,11 +289,12 @@ export const UNIVERSAL_FORMATIONS: FormationTemplate[] = [
   { name: "跪站混合三层式", summary: "前排跪坐 + 中后排站立的三层错落站位", rows: 3, spacingRule: "前排跪坐间距 50cm,中后排站立左右 60cm,排间 80cm", countRange: [12, 36], tips: "小学低段合唱高频队形;跪坐排放最矮的孩子,视觉层次自然拉开且无需台架。", universal: true, tags: ["低龄", "合唱", "层次", "童趣", "小学"] },
   { name: "前三后二蹲站式", summary: "前排三分之二蹲/跪 + 后排站立的两层紧凑站位", rows: 2, spacingRule: "前排间距 45cm,后排 60cm,排间 70cm", countRange: [8, 20], tips: "学前与低龄节目的稳妥选择;无队形变换,靠表情与轻微摇摆撑场。", universal: true, tags: ["学前", "低龄", "简洁", "稳妥"] },
   { name: "弧形领诵分区式", summary: "多排弧形合诵区 + 独立前置领诵位", rows: 3, spacingRule: "弧线弦距 60cm,排间 85cm,领诵位距首排 1.5m", countRange: [10, 40], tips: "朗诵类节目标准队形;领诵独立走位,合诵区统一朝向,男女左右分区更利声部平衡。", universal: true, tags: ["朗诵", "领诵", "弧形", "分区", "仪式"] },
-  { name: "双色声部分组式", summary: "按声部/服色分成左右两组,阶梯排布", rows: 3, spacingRule: "组内左右 55cm,两组间留 1m 分界,逐排增高 20cm", countRange: [24, 60], tips: "高中及以上合唱高频队形;两组服装用撞色或深浅呼应,视觉与声部一举两得。", universal: true, tags: ["合唱", "声部", "撞色", "高中", "大型"] },
+  { name: "双色声部分组式", summary: "按声部/服色分成左右两组,阶梯排布", rows: 3, spacingRule: "组内左右 55cm,两组间留 1m 分界,逐排增高 20cm", countRange: [24, 60], tips: "高中及��上合唱高频队形;两组服装用撞色或深浅呼应,视觉与声部一举两得。", universal: true, tags: ["合唱", "声部", "撞色", "高中", "大型"] },
   { name: "梯形阶梯合唱式", summary: "上窄下宽的梯形轮廓,逐排增高站上台架", rows: 4, spacingRule: "左右 55cm,逐排增高 25cm,首末排宽度差约 1/4 台宽", countRange: [30, 80], tips: "中学以上大合唱标准队形;需合唱台架,末排注意护栏,指挥与队形中轴对齐。", universal: true, tags: ["合唱", "阶梯", "气势", "大型", "比赛"] },
   { name: "扇形声部排列式", summary: "以指挥为圆心扇面展开,按乐��/声部分区", rows: 3, spacingRule: "弧线弦距 70cm,层间半径差 1.2m,声部间留 80cm 分界", countRange: [12, 50], tips: "器乐与民乐合奏标准队形;高音区靠外、低音区靠内,谱架与人错位摆放。", universal: true, tags: ["器乐", "乐团", "扇形", "声部"] },
   { name: "景深三区戏剧式", summary: "前中后三个表演分区,按场景切换调度", rows: 3, spacingRule: "前区距台口 1m,区间纵深各约 1/3 台深,横��自由", countRange: [6, 30], tips: "课本剧/戏剧通用;主角色居前区,群演中后区候场式站位,配合灯光分区切换场景。", universal: true, tags: ["戏剧", "课本剧", "分区", "叙事", "调度"] },
   { name: "环形领唱环绕式", summary: "群体围成开口环形,领唱/独唱居环心", rows: 2, spacingRule: "环上等分 65cm,环心留 2m 表演区,开口朝观众", countRange: [12, 40], tips: "有领唱/独唱段落的高中合唱与民族节目常用;环体可缓慢流动增强仪式感。", universal: true, tags: ["领唱", "环形", "民族", "仪式", "流动"] },
+  { name: "心形环绕式", summary: "心形轮廓等分环绕,尖端朝向观众", rows: 1, spacingRule: "心形线等分取点,人距约 70cm,尖端距台口 1m", countRange: [12, 48], tips: "感恩、毕业与主题晚会高频队形;心形尖端是天然独唱/领诵位。", universal: true, tags: ["主题", "感恩", "毕业", "环绕", "仪式"] },
 ];
 
 /** 中文色名 → HEX 对照表(由知识库全部配色条目汇总生成,另补常用色)。 */
