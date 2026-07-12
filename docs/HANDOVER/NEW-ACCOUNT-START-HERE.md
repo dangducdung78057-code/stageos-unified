@@ -6,11 +6,12 @@
 
 - Gate-01～10：**Frozen**。
 - Gate-10 Final：**Passed**。
-- Gate-11 Phase 1：原始 Asset Expansion 交付未进入当前仓库，且恢复搜索未找到可信来源；当前状态为 **Pending Rebuild**。
-- Gate-11 Phase 1 Human Sign-off：**未通过**。
+- Gate-11 Phase 1：**已重建并正式落库**，交付路径为 `art-delivery/outfit-004/asset-expansion-rules/`。
+- Gate-11 Phase 1 规则交付 Commit：`e0a018d199bb959da8651d1dc0850862beae4dbf`。
+- Gate-11 Phase 1 Human Sign-off：**Pending / 尚未完成**。
 - Gate-11 Phase 2：**Not Started / Blocked**。
+- 下一步唯一允许任务：**Gate-11 Phase 1 Human Sign-off**。
 - 四个 Production 角色单元：`primary-girl-basic-white`、`primary-boy-basic-white`、`teen-girl-basic-white`、`teen-boy-basic-white`。
-- 当前仓库不存在 `art-delivery/` 目录；不能把预期路径误报为真实路径。
 
 ## 2. 必须先阅读哪些文件
 
@@ -18,12 +19,14 @@
 
 1. `docs/HANDOVER/NEW-ACCOUNT-START-HERE.md`（本文件）
 2. `docs/HANDOVER/PROJECT_HANDOVER_v1.md`
-3. `GATE-11-PHASE-1-DELIVERY-RECOVERY-REPORT.md`
-4. `docs/2.5d-character-asset-spec.md`
-5. `docs/checklists/2.5d-character-onboarding.md`
-6. `docs/checklists/2.5d-character-promotion.md`
-7. `lib/stage-shared/stage-constraints.ts`
-8. 与获批任务直接相关的实际文件
+3. `art-delivery/outfit-004/asset-expansion-rules/README.md`
+4. `art-delivery/outfit-004/asset-expansion-rules/GATE-11-PHASE-1-REBUILD-REPORT.md`
+5. `art-delivery/outfit-004/asset-expansion-rules/GATE-11-PHASE-1-MANIFEST.json`
+6. `docs/2.5d-character-asset-spec.md`
+7. `docs/checklists/2.5d-character-onboarding.md`
+8. `docs/checklists/2.5d-character-promotion.md`
+9. `lib/stage-shared/stage-constraints.ts`
+10. 与获批任务直接相关的实际文件
 
 随后必须检查：
 
@@ -54,31 +57,17 @@ git diff <approved-baseline>...HEAD
 
 在项目负责人明确授权后：
 
-**重建 Gate-11 Phase 1 Asset Expansion 交付，并重新进行 Human Sign-off。**
+**执行 Gate-11 Phase 1 Human Sign-off。**
 
-目标目录：
+签署对象：
 
 ```text
 art-delivery/outfit-004/asset-expansion-rules/
 ```
 
-预期交付：
+规则交付已在 Commit `e0a018d199bb959da8651d1dc0850862beae4dbf` 中完成重建。Human Sign-off 必须保持只读验收，不得修改规则以制造通过结果，也不得启动 Gate-11 Phase 2。
 
-```text
-README.md
-character-reuse-rules.json
-material-dna-migration-rules.json
-palette-expansion-rules.json
-cloud-collar-compatibility-rules.json
-age-program-boundary-rules.json
-expansion-validation-rules.json
-validation-cases.json
-GATE-11-PHASE-1-REVISION-REPORT.md
-```
-
-重建必须明确标记为 `Rebuild`，不得标记为 `Recovered Original`。重建只能触及获批的 Gate-11 Phase 1 目录及必要的交接状态文档；任何超出范围的修改都应立即停止并请求确认。
-
-Human Sign-off 前至少验证以下八项：
+Human Sign-off 至少复核以下八项：
 
 1. Teen Girl → Primary Girl：Reject。
 2. Center Variant → 全队成员：Reject。
