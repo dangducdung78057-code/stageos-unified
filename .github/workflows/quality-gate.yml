@@ -27,9 +27,6 @@ jobs:
       - name: Encoding check (no U+FFFD)
         run: node scripts/check-encoding.mjs
 
-      - name: Validate 2.5D character assets
-        run: pnpm validate:characters
-
       - name: Type check
         run: pnpm typecheck
 

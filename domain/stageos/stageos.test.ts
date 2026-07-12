@@ -12,8 +12,7 @@ import {
   spriteManifestSchema,
 } from "./sprite-manifest";
 import { parseSceneData, stageSceneSchema } from "./scene";
-import { sanitizeAppearance, snapshotScene, useEditorStore } from "@/components/formation/editor-core";
-import { isCharacterQaEnabled } from "@/components/formation-3d-editor";
+import { sanitizeAppearance } from "@/components/formation/editor-core";
 
 const baseScene = {
   schemaVersion: 2 as const,
@@ -86,66 +85,6 @@ describe("场景项目隔离与迁移", () => {
   });
 });
 
-describe("角色 QA 调试", () => {
-  it("Production 默认隐藏，显式 QA 开关可开启", () => {
-    expect(isCharacterQaEnabled("production", undefined)).toBe(false);
-    expect(isCharacterQaEnabled("production", "true")).toBe(true);
-    expect(isCharacterQaEnabled("development", undefined)).toBe(true);
-  });
-
-  it("角色选择写入现有 selectedId 状态", () => {
-    const state = useEditorStore.getState();
-    const girl = state.performers.find((item) => item.spriteId === "primary-girl-basic-white")!;
-    state.select(girl.id);
-    expect(useEditorStore.getState().selectedId).toBe(girl.id);
-  });
-
-  it("QA 可将选中角色切换为开发态青少年素材", () => {
-    const state = useEditorStore.getState();
-    const girl = state.performers.find((item) => item.gender === "female")!;
-    const boy = state.performers.find((item) => item.gender === "male")!;
-    state.setPerformerSpriteId(girl.id, "teen-girl-basic-white");
-    state.setPerformerSpriteId(boy.id, "teen-boy-basic-white");
-    const updatedGirl = useEditorStore.getState().performers.find((item) => item.id === girl.id)!;
-    const updatedBoy = useEditorStore.getState().performers.find((item) => item.id === boy.id)!;
-    expect(updatedGirl.spriteId).toBe("teen-girl-basic-white");
-    expect(updatedBoy.spriteId).toBe("teen-boy-basic-white");
-    expect(updatedGirl.appearance.accentColor).toBeUndefined();
-    expect(updatedBoy.appearance.accentColor).toBeUndefined();
-    state.setPerformerSpriteId(girl.id, "primary-girl-basic-white");
-    state.setPerformerSpriteId(boy.id, "primary-boy-basic-white");
-  });
-
-  it("方向与启用区域颜色写入统一 store 并可序列化恢复", () => {
-    const state = useEditorStore.getState();
-    const performer = state.performers.find((item) => item.gender === "female")!;
-    state.setPerformerDirection(performer.id, -45);
-    state.setPerformerAppearanceColor(performer.id, "upper", "#123456");
-    state.setPerformerAppearanceColor(performer.id, "lower", "#234567");
-    state.setPerformerAppearanceColor(performer.id, "footwear", "#345678");
-    state.setPerformerAppearanceColor(performer.id, "accent", "#456789");
-
-    const saved = snapshotScene(useEditorStore.getState());
-    const persisted = saved.performers.find((item) => item.id === performer.id)!;
-    expect(persisted.direction).toBe(-45);
-    expect(persisted.appearance).toMatchObject({
-      upperColor: "#123456", lowerColor: "#234567", footwearColor: "#345678", accentColor: "#456789",
-    });
-
-    useEditorStore.getState().setPerformerDirection(performer.id, 45);
-    useEditorStore.getState().hydrate(saved);
-    expect(useEditorStore.getState().performers.find((item) => item.id === performer.id)).toMatchObject(persisted);
-  });
-
-  it("Manifest 禁用区域拒绝写入", () => {
-    const state = useEditorStore.getState();
-    const performer = state.performers.find((item) => item.gender === "male")!;
-    const before = performer.appearance.accentColor;
-    state.setPerformerAppearanceColor(performer.id, "accent", "#abcdef");
-    expect(useEditorStore.getState().performers.find((item) => item.id === performer.id)?.appearance.accentColor).toBe(before);
-  });
-});
-
 describe("Sprite Manifest", () => {
   it("小学女生映射到唯一精灵", () => {
     expect(resolveSpriteId({ gender: "female", ageSegment: "primary" })).toBe("primary-girl-basic-white");
@@ -155,11 +94,11 @@ describe("Sprite Manifest", () => {
     expect(getSpriteManifest("missing-sprite")).toBeNull();
   });
 
-  it("女生正式素材状态明确", () => {
-    expect(getSpriteManifest("primary-girl-basic-white")?.placeholder).toBe(false);
+  it("开发占位素材状态明确", () => {
+    expect(getSpriteManifest("primary-girl-basic-white")?.placeholder).toBe(true);
   });
 
-  it("女生三方向与十二张独立遮罩全部落盘且已晋级", () => {
+  it("Preview 三方向与十二张独立遮罩全部落盘且保持待验收", () => {
     const root = resolve(process.cwd(), "public/assets/stage-2.5d/characters/primary-girl/basic-white");
     const base = resolve(root, "preview");
     const candidateManifest = JSON.parse(readFileSync(resolve(root, "manifest.json"), "utf8"));
@@ -182,76 +121,12 @@ describe("Sprite Manifest", () => {
     expect(candidateManifest).toMatchObject({
       assetVersion: "preview-20260711-1",
       spriteId: "primary-girl-basic-white",
-      assetStatus: "production",
-      placeholder: false,
-      productionReady: true,
+      assetStatus: "development",
+      placeholder: true,
+      productionReady: false,
       worldHeightCm: 140,
       canvas: { width: 1024, height: 1536, footBaselineY: 1449, anchorX: 0.5, anchorY: 1449 / 1536 },
     });
-  });
-
-  it("青少年女生生产素材三方向与三区遮罩完整，accent 保持禁用", () => {
-    const root = resolve(process.cwd(), "public/assets/stage-2.5d/characters/teen-girl/basic-white");
-    const candidateManifest = JSON.parse(readFileSync(resolve(root, "manifest.json"), "utf8"));
-    const referencedFiles = Object.values(candidateManifest.views).flatMap((view) => {
-      const typedView = view as { image: string; masks: Record<string, string | null> };
-      return [typedView.image, ...Object.entries(typedView.masks)
-        .filter(([region]) => candidateManifest.regions[region].enabled)
-        .map(([, file]) => file)];
-    });
-    expect(referencedFiles).toHaveLength(12);
-    expect(referencedFiles.every((file) => typeof file === "string" && existsSync(resolve(root, file)))).toBe(true);
-    expect(candidateManifest).toMatchObject({
-      assetVersion: "preview-20260712-1",
-      spriteId: "teen-girl-basic-white",
-      assetStatus: "production",
-      placeholder: false,
-      productionReady: true,
-      worldHeightCm: 155,
-      canvas: { width: 1024, height: 1536, footBaselineY: 1449, anchorY: 1449 / 1536 },
-    });
-    expect(candidateManifest.regions.accent.enabled).toBe(false);
-    expect(candidateManifest.productionBlockers).toEqual([]);
-    expect(Object.values(candidateManifest.views).every((view) => (view as { masks: { accent: null } }).masks.accent === null)).toBe(true);
-    const runtime = getSpriteManifest("teen-girl-basic-white")!;
-    expect(runtime.assetStatus).toBe("production");
-    expect(runtime.placeholder).toBe(false);
-    expect(runtime.regions.accent.enabled).toBe(false);
-    expect(Object.values(runtime.directionMasks ?? {}).every((masks) => masks.accent === null)).toBe(true);
-    expect(resolveSpriteAssets(runtime, 0).masks.accent).toBeNull();
-    expect(isProductionReady(runtime)).toBe(true);
-  });
-
-  it("青少年男生生产素材三方向与三区遮罩完整，accent 保持禁用", () => {
-    const root = resolve(process.cwd(), "public/assets/stage-2.5d/characters/teen-boy/basic-white");
-    const candidateManifest = JSON.parse(readFileSync(resolve(root, "manifest.json"), "utf8"));
-    const referencedFiles = Object.values(candidateManifest.views).flatMap((view) => {
-      const typedView = view as { image: string; masks: Record<string, string | null> };
-      return [typedView.image, ...Object.entries(typedView.masks)
-        .filter(([region]) => candidateManifest.regions[region].enabled)
-        .map(([, file]) => file)];
-    });
-    expect(referencedFiles).toHaveLength(12);
-    expect(referencedFiles.every((file) => typeof file === "string" && existsSync(resolve(root, file)))).toBe(true);
-    expect(candidateManifest).toMatchObject({
-      assetVersion: "preview-20260712-1",
-      spriteId: "teen-boy-basic-white",
-      assetStatus: "production",
-      placeholder: false,
-      productionReady: true,
-      worldHeightCm: 160,
-      canvas: { width: 1024, height: 1536, footBaselineY: 1449, anchorY: 1449 / 1536 },
-    });
-    expect(candidateManifest.regions.accent.enabled).toBe(false);
-    expect(candidateManifest.productionBlockers).toEqual([]);
-    expect(Object.values(candidateManifest.views).every((view) => (view as { masks: { accent: null } }).masks.accent === null)).toBe(true);
-    const runtime = getSpriteManifest("teen-boy-basic-white")!;
-    expect(runtime.assetStatus).toBe("production");
-    expect(runtime.placeholder).toBe(false);
-    expect(runtime.regions.accent.enabled).toBe(false);
-    expect(Object.values(runtime.directionMasks ?? {}).every((masks) => masks.accent === null)).toBe(true);
-    expect(resolveSpriteAssets(runtime, 0).masks.accent).toBeNull();
-    expect(isProductionReady(runtime)).toBe(true);
   });
 
   it("男生 Preview 仅校验启用区域，禁用 accent 不阻止晋级", () => {
@@ -283,12 +158,12 @@ describe("Sprite Manifest", () => {
     expect(isProductionReady(runtime)).toBe(true);
   });
 
-  it("女生运行时 Manifest 已达到生产标准", () => {
+  it("开发素材不得冒充正式素材", () => {
     const manifest = getSpriteManifest("primary-girl-basic-white");
     expect(() => spriteManifestSchema.parse(manifest)).not.toThrow();
     expect(manifest?.directions.frontLeft).toBeTruthy();
     expect(manifest?.directions.frontRight).toBeTruthy();
-    expect(manifest && isProductionReady(manifest)).toBe(true);
+    expect(manifest && isProductionReady(manifest)).toBe(false);
   });
 
   it("正式素材必须有三方向和每方向四区遮罩", () => {

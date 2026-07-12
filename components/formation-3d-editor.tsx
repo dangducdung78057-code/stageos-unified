@@ -14,7 +14,6 @@ import {
   FEMALE_COLOR,
   DURATION,
   type LightMode,
-  type Performer,
 } from "@/components/formation/editor-core";
 import type { DotSketchHandle } from "@/components/formation/dot-sketch-view";
 import {
@@ -26,8 +25,6 @@ import {
 } from "@/app/actions/formation";
 import { getEntitlements } from "@/domain/stageos/entitlements";
 import type { MembershipTier, PreviewMode } from "@/domain/stageos/types";
-import { getSpriteManifest, SPRITE_MANIFESTS } from "@/domain/stageos/sprite-manifest";
-import type { AppearanceRegion } from "@/domain/stageos/sprite-manifest";
 import type { ColorPalette } from "@/lib/stageKnowledge";
 import {
   LayoutGrid,
@@ -96,10 +93,6 @@ function presetIcon(name: string): React.ReactNode {
 const PRESETS = PRESET_META.map((f) => ({ id: f.name, name: f.name, summary: f.summary, icon: presetIcon(f.name) }));
 
 // ---------- 面板 ----------
-
-export function isCharacterQaEnabled(nodeEnv = process.env.NODE_ENV, publicFlag = process.env.NEXT_PUBLIC_STAGEOS_CHARACTER_QA) {
-  return nodeEnv !== "production" || publicFlag === "true";
-}
 
 function Panel({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
@@ -492,107 +485,6 @@ function OutdoorControls() {
   );
 }
 
-const QA_DIRECTIONS = [
-  { label: "正面", value: 0 },
-  { label: "左前", value: -45 },
-  { label: "右前", value: 45 },
-] as const;
-
-const QA_REGIONS: { region: AppearanceRegion; label: string; field: "upperColor" | "lowerColor" | "footwearColor" | "accentColor" }[] = [
-  { region: "upper", label: "上装", field: "upperColor" },
-  { region: "lower", label: "下装", field: "lowerColor" },
-  { region: "footwear", label: "鞋履", field: "footwearColor" },
-  { region: "accent", label: "点缀", field: "accentColor" },
-];
-
-function CharacterQaPanel({ performer }: { performer: Performer }) {
-  const performers = useEditorStore((s) => s.performers);
-  const select = useEditorStore((s) => s.select);
-  const manifest = getSpriteManifest(performer.spriteId);
-  const setDirection = useEditorStore((s) => s.setPerformerDirection);
-  const setSpriteId = useEditorStore((s) => s.setPerformerSpriteId);
-  const setColor = useEditorStore((s) => s.setPerformerAppearanceColor);
-  if (!manifest) return null;
-
-  return (
-    <section className="rounded-lg border border-[#c9a227]/50 bg-[#c9a227]/10 p-3" aria-label="角色 QA 调试">
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <h3 className="text-xs font-bold text-[#f5c542]">角色 QA 调试</h3>
-        <span className="font-mono text-[10px] text-[#c7d2de]">QA only</span>
-      </div>
-      <label className="mb-3 block text-[11px] font-medium text-[#9fb3c8]" htmlFor="qa-performer-select">
-        测试角色
-        <select
-          id="qa-performer-select"
-          value={performer.id}
-          onChange={(event) => select(event.target.value)}
-          className="mt-1.5 w-full rounded-md border border-[#343a47] bg-[#1b1f27] px-2 py-2 font-mono text-[10px] text-[#f0f3f6] outline-none focus:border-[#3aa89e]"
-        >
-          {performers.map((item, index) => (
-            <option key={item.id} value={item.id}>
-              {index + 1}. {item.id} · {item.spriteId}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className="mb-3 block text-[11px] font-medium text-[#9fb3c8]" htmlFor="qa-sprite-select">
-        测试素材
-        <select
-          id="qa-sprite-select"
-          value={manifest.spriteId}
-          onChange={(event) => setSpriteId(performer.id, event.target.value)}
-          className="mt-1.5 w-full rounded-md border border-[#343a47] bg-[#1b1f27] px-2 py-2 font-mono text-[10px] text-[#f0f3f6] outline-none focus:border-[#3aa89e]"
-        >
-          {Object.values(SPRITE_MANIFESTS).map((item) => (
-            <option key={item.spriteId} value={item.spriteId}>
-              {item.spriteId} · {item.assetStatus}
-            </option>
-          ))}
-        </select>
-      </label>
-      <dl className="mb-3 rounded-md bg-[#1b1f27] p-2 font-mono text-[10px] text-[#c7d2de]">
-        <div className="flex gap-2"><dt className="shrink-0 text-[#9fb3c8]">selectedPerformerId</dt><dd className="min-w-0 break-all">{performer.id}</dd></div>
-        <div className="mt-1 flex gap-2"><dt className="shrink-0 text-[#9fb3c8]">spriteId</dt><dd className="min-w-0 break-all">{manifest.spriteId}</dd></div>
-      </dl>
-      <fieldset>
-        <legend className="mb-2 text-[11px] font-medium text-[#9fb3c8]">人物方向</legend>
-        <div className="flex gap-1.5" role="group" aria-label="人物方向">
-          {QA_DIRECTIONS.map((item) => (
-            <button
-              key={item.value}
-              type="button"
-              onClick={() => setDirection(performer.id, item.value)}
-              aria-pressed={performer.direction === item.value}
-              className={cn(
-                "flex-1 rounded-md border px-2 py-1.5 text-[11px] font-medium transition-colors",
-                performer.direction === item.value
-                  ? "border-[#3aa89e]/60 bg-[#3aa89e]/20 text-[#7fd4cb]"
-                  : "border-[#343a47] text-[#c7d2de] hover:bg-[#262b34]",
-              )}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-      </fieldset>
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        {QA_REGIONS.filter(({ region }) => manifest.regions[region].enabled).map(({ region, label, field }) => (
-          <label key={region} className="flex items-center justify-between gap-2 rounded-md bg-[#262b34] px-2 py-1.5 text-[11px] text-[#c7d2de]">
-            {label}
-            <input
-              type="color"
-              value={performer.appearance[field] ?? "#ffffff"}
-              onChange={(event) => setColor(performer.id, region, event.target.value)}
-              aria-label={`${label}颜色`}
-              className="h-6 w-8 cursor-pointer rounded border border-[#343a47] bg-transparent"
-            />
-          </label>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 function PropertiesPanel() {
   const selectedId = useEditorStore((s) => s.selectedId);
   const performers = useEditorStore((s) => s.performers);
@@ -601,14 +493,13 @@ function PropertiesPanel() {
   const setSnap = useEditorStore((s) => s.setSnap);
   const applyPreset = useEditorStore((s) => s.applyPreset);
   const activePreset = useEditorStore((s) => s.activePreset);
-  const renderMode = useEditorStore((s) => s.renderMode);
   const selected = performers.find((p) => p.id === selectedId);
 
   const inputClass =
     "w-full rounded-lg border border-[#343a47] bg-[#262b34] px-3 py-2 text-sm text-[#f0f3f6] outline-none focus:border-[#3aa89e] focus:ring-1 focus:ring-[#3aa89e]";
 
   return (
-    <Panel className="pointer-events-auto absolute top-6 right-6 z-10 max-h-[calc(100vh-3rem)] w-72 overflow-y-auto">
+    <Panel className="pointer-events-auto absolute top-6 right-6 z-10 w-72">
       <h2 className="mb-4 text-lg font-bold tracking-tight text-[#f0f3f6]">属性</h2>
       {selected ? (
         <div className="flex flex-col gap-4">
@@ -623,9 +514,6 @@ function PropertiesPanel() {
               {selected.gender === "male" ? "男" : "女"} · {selected.heightCm}cm
             </div>
           </div>
-          {renderMode === "stage-2.5d" && isCharacterQaEnabled() && getSpriteManifest(selected.spriteId) ? (
-            <CharacterQaPanel performer={selected} />
-          ) : null}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label htmlFor="posX" className="mb-1.5 block text-xs font-medium text-[#9fb3c8]">

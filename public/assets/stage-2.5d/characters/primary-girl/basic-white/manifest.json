@@ -5,9 +5,9 @@
   "spriteId": "primary-girl-basic-white",
   "variantId": "basic-white",
   "style": "2.5d-semi-realistic",
-  "assetStatus": "production",
-  "placeholder": false,
-  "productionReady": true,
+  "assetStatus": "development",
+  "placeholder": true,
+  "productionReady": false,
   "worldHeightCm": 140,
   "canvas": {
     "width": 1024,

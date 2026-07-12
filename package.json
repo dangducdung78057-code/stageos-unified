@@ -8,10 +8,9 @@
     "start": "next start",
     "lint": "eslint .",
     "check:encoding": "node scripts/check-encoding.mjs",
-    "validate:characters": "node scripts/validate-character-assets.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "verify": "pnpm check:encoding && pnpm validate:characters && pnpm typecheck && pnpm lint && pnpm test && pnpm build"
+    "verify": "pnpm check:encoding && pnpm typecheck && pnpm lint && pnpm test && pnpm build"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
