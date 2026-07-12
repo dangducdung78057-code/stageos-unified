@@ -506,6 +506,8 @@ const QA_REGIONS: { region: AppearanceRegion; label: string; field: "upperColor"
 ];
 
 function CharacterQaPanel({ performer }: { performer: Performer }) {
+  const performers = useEditorStore((s) => s.performers);
+  const select = useEditorStore((s) => s.select);
   const manifest = getSpriteManifest(performer.spriteId);
   const setDirection = useEditorStore((s) => s.setPerformerDirection);
   const setColor = useEditorStore((s) => s.setPerformerAppearanceColor);
@@ -515,8 +517,27 @@ function CharacterQaPanel({ performer }: { performer: Performer }) {
     <section className="rounded-lg border border-[#c9a227]/50 bg-[#c9a227]/10 p-3" aria-label="角色 QA 调试">
       <div className="mb-3 flex items-center justify-between gap-2">
         <h3 className="text-xs font-bold text-[#f5c542]">角色 QA 调试</h3>
-        <span className="font-mono text-[10px] text-[#c7d2de]">{manifest.spriteId}</span>
+        <span className="font-mono text-[10px] text-[#c7d2de]">QA only</span>
       </div>
+      <label className="mb-3 block text-[11px] font-medium text-[#9fb3c8]" htmlFor="qa-performer-select">
+        测试角色
+        <select
+          id="qa-performer-select"
+          value={performer.id}
+          onChange={(event) => select(event.target.value)}
+          className="mt-1.5 w-full rounded-md border border-[#343a47] bg-[#1b1f27] px-2 py-2 font-mono text-[10px] text-[#f0f3f6] outline-none focus:border-[#3aa89e]"
+        >
+          {performers.map((item, index) => (
+            <option key={item.id} value={item.id}>
+              {index + 1}. {item.id} · {item.spriteId}
+            </option>
+          ))}
+        </select>
+      </label>
+      <dl className="mb-3 rounded-md bg-[#1b1f27] p-2 font-mono text-[10px] text-[#c7d2de]">
+        <div className="flex gap-2"><dt className="shrink-0 text-[#9fb3c8]">selectedPerformerId</dt><dd className="min-w-0 break-all">{performer.id}</dd></div>
+        <div className="mt-1 flex gap-2"><dt className="shrink-0 text-[#9fb3c8]">spriteId</dt><dd className="min-w-0 break-all">{manifest.spriteId}</dd></div>
+      </dl>
       <fieldset>
         <legend className="mb-2 text-[11px] font-medium text-[#9fb3c8]">人物方向</legend>
         <div className="flex gap-1.5" role="group" aria-label="人物方向">

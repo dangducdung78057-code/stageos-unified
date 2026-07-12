@@ -93,6 +93,13 @@ describe("角色 QA 调试", () => {
     expect(isCharacterQaEnabled("development", undefined)).toBe(true);
   });
 
+  it("角色选择写入现有 selectedId 状态", () => {
+    const state = useEditorStore.getState();
+    const girl = state.performers.find((item) => item.spriteId === "primary-girl-basic-white")!;
+    state.select(girl.id);
+    expect(useEditorStore.getState().selectedId).toBe(girl.id);
+  });
+
   it("方向与启用区域颜色写入统一 store 并可序列化恢复", () => {
     const state = useEditorStore.getState();
     const performer = state.performers.find((item) => item.gender === "female")!;
