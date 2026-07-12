@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 2,
+  "assetVersion": "draft-20260711-1",
+  "characterId": "teen-girl",
+  "spriteId": "teen-girl-basic-white",
+  "variantId": "basic-white",
+  "style": "2.5d-semi-realistic",
+  "assetStatus": "development",
+  "placeholder": true,
+  "productionReady": false,
+  "regions": {
+    "upper": { "enabled": true },
+    "lower": { "enabled": true },
+    "footwear": { "enabled": true },
+    "accent": { "enabled": true }
+  },
+  "productionBlockers": [
+    "三方向底图未交付",
+    "四区三方向遮罩未交付",
+    "worldHeightCm 尚待角色设定确认",
+    "anchor 与 footBaseline 尚未校准",
+    "QA 验收未完成"
+  ],
+  "worldHeightCm": 155,
+  "canvas": {
+    "width": 1024,
+    "height": 1536,
+    "unit": "px",
+    "origin": "top-left",
+    "footBaselineY": null,
+    "anchorX": 0.5,
+    "anchorY": null,
+    "alignment": "center-bottom"
+  },
+  "views": {
+    "front": { "image": null, "masks": { "upper": null, "lower": null, "footwear": null, "accent": null } },
+    "front-left": { "image": null, "masks": { "upper": null, "lower": null, "footwear": null, "accent": null } },
+    "front-right": { "image": null, "masks": { "upper": null, "lower": null, "footwear": null, "accent": null } }
+  }
+}
