@@ -157,9 +157,9 @@ const PRIMARY_GIRL_BASIC_WHITE: SpriteManifest = spriteManifestSchema.parse({
       accent: `${BASE}/primary-girl/basic-white/preview/masks/accent-front-right.png`,
     },
   },
-  // 验收期间保持开发占位状态；不可由文件齐全自动晋级。
-  assetStatus: "development",
-  placeholder: true,
+  // 已通过三方向、四区换色与云端恢复生产验收。
+  assetStatus: "production",
+  placeholder: false,
 });
 
 /** 首批测试人物:小学男生 · 基础白色服装 */

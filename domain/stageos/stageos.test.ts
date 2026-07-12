@@ -139,11 +139,11 @@ describe("Sprite Manifest", () => {
     expect(getSpriteManifest("missing-sprite")).toBeNull();
   });
 
-  it("开发占位素材状态明确", () => {
-    expect(getSpriteManifest("primary-girl-basic-white")?.placeholder).toBe(true);
+  it("女生正式素材状态明确", () => {
+    expect(getSpriteManifest("primary-girl-basic-white")?.placeholder).toBe(false);
   });
 
-  it("Preview 三方向与十二张独立遮罩全部落盘且保持待验收", () => {
+  it("女生三方向与十二张独立遮罩全部落盘且已晋级", () => {
     const root = resolve(process.cwd(), "public/assets/stage-2.5d/characters/primary-girl/basic-white");
     const base = resolve(root, "preview");
     const candidateManifest = JSON.parse(readFileSync(resolve(root, "manifest.json"), "utf8"));
@@ -166,9 +166,9 @@ describe("Sprite Manifest", () => {
     expect(candidateManifest).toMatchObject({
       assetVersion: "preview-20260711-1",
       spriteId: "primary-girl-basic-white",
-      assetStatus: "development",
-      placeholder: true,
-      productionReady: false,
+      assetStatus: "production",
+      placeholder: false,
+      productionReady: true,
       worldHeightCm: 140,
       canvas: { width: 1024, height: 1536, footBaselineY: 1449, anchorX: 0.5, anchorY: 1449 / 1536 },
     });
@@ -203,12 +203,12 @@ describe("Sprite Manifest", () => {
     expect(isProductionReady(runtime)).toBe(true);
   });
 
-  it("开发素材不得冒充正式素材", () => {
+  it("女生运行时 Manifest 已达到生产标准", () => {
     const manifest = getSpriteManifest("primary-girl-basic-white");
     expect(() => spriteManifestSchema.parse(manifest)).not.toThrow();
     expect(manifest?.directions.frontLeft).toBeTruthy();
     expect(manifest?.directions.frontRight).toBeTruthy();
-    expect(manifest && isProductionReady(manifest)).toBe(false);
+    expect(manifest && isProductionReady(manifest)).toBe(true);
   });
 
   it("正式素材必须有三方向和每方向四区遮罩", () => {
