@@ -211,6 +211,7 @@ describe("Sprite Manifest", () => {
       canvas: { width: 1024, height: 1536, footBaselineY: 1449, anchorY: 1449 / 1536 },
     });
     expect(candidateManifest.regions.accent.enabled).toBe(false);
+    expect(candidateManifest.productionBlockers).toEqual([]);
     expect(Object.values(candidateManifest.views).every((view) => (view as { masks: { accent: null } }).masks.accent === null)).toBe(true);
     const runtime = getSpriteManifest("teen-girl-basic-white")!;
     expect(runtime.assetStatus).toBe("production");
@@ -242,6 +243,7 @@ describe("Sprite Manifest", () => {
       canvas: { width: 1024, height: 1536, footBaselineY: 1449, anchorY: 1449 / 1536 },
     });
     expect(candidateManifest.regions.accent.enabled).toBe(false);
+    expect(candidateManifest.productionBlockers).toEqual([]);
     expect(Object.values(candidateManifest.views).every((view) => (view as { masks: { accent: null } }).masks.accent === null)).toBe(true);
     const runtime = getSpriteManifest("teen-boy-basic-white")!;
     expect(runtime.assetStatus).toBe("production");

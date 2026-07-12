@@ -14,11 +14,7 @@
     "footwear": { "enabled": true },
     "accent": { "enabled": false }
   },
-  "productionBlockers": [
-    "PixiJS 三方向与三区独立换色验收待完成",
-    "云端保存、刷新与恢复验收待完成",
-    "人工生产晋级待批准"
-  ],
+  "productionBlockers": [],
   "worldHeightCm": 155,
   "canvas": {
     "width": 1024,
