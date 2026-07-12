@@ -162,7 +162,7 @@ const PRIMARY_GIRL_BASIC_WHITE: SpriteManifest = spriteManifestSchema.parse({
   placeholder: false,
 });
 
-/** 开发预览人物:青少年女生 · 基础白色服装 */
+/** 生产人物:青少年女生 · 基础白色服装 */
 const TEEN_GIRL_BASIC_WHITE: SpriteManifest = spriteManifestSchema.parse({
   characterId: "teen-girl",
   spriteId: "teen-girl-basic-white",
@@ -205,8 +205,9 @@ const TEEN_GIRL_BASIC_WHITE: SpriteManifest = spriteManifestSchema.parse({
       accent: null,
     },
   },
-  assetStatus: "development",
-  placeholder: true,
+  // 已通过三方向、三区换色与云端恢复生产验收；accent 保持禁用。
+  assetStatus: "production",
+  placeholder: false,
 });
 
 /** 开发预览人物:青少年男生 · 基础白色服装 */

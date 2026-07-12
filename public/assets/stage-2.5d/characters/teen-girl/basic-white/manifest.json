@@ -5,9 +5,9 @@
   "spriteId": "teen-girl-basic-white",
   "variantId": "basic-white",
   "style": "2.5d-semi-realistic",
-  "assetStatus": "development",
-  "placeholder": true,
-  "productionReady": false,
+  "assetStatus": "production",
+  "placeholder": false,
+  "productionReady": true,
   "regions": {
     "upper": { "enabled": true },
     "lower": { "enabled": true },

@@ -190,7 +190,7 @@ describe("Sprite Manifest", () => {
     });
   });
 
-  it("青少年女生开发预览三方向与三区遮罩完整，accent 保持禁用", () => {
+  it("青少年女生生产素材三方向与三区遮罩完整，accent 保持禁用", () => {
     const root = resolve(process.cwd(), "public/assets/stage-2.5d/characters/teen-girl/basic-white");
     const candidateManifest = JSON.parse(readFileSync(resolve(root, "manifest.json"), "utf8"));
     const referencedFiles = Object.values(candidateManifest.views).flatMap((view) => {
@@ -204,21 +204,21 @@ describe("Sprite Manifest", () => {
     expect(candidateManifest).toMatchObject({
       assetVersion: "preview-20260712-1",
       spriteId: "teen-girl-basic-white",
-      assetStatus: "development",
-      placeholder: true,
-      productionReady: false,
+      assetStatus: "production",
+      placeholder: false,
+      productionReady: true,
       worldHeightCm: 155,
       canvas: { width: 1024, height: 1536, footBaselineY: 1449, anchorY: 1449 / 1536 },
     });
     expect(candidateManifest.regions.accent.enabled).toBe(false);
     expect(Object.values(candidateManifest.views).every((view) => (view as { masks: { accent: null } }).masks.accent === null)).toBe(true);
     const runtime = getSpriteManifest("teen-girl-basic-white")!;
-    expect(runtime.assetStatus).toBe("development");
-    expect(runtime.placeholder).toBe(true);
+    expect(runtime.assetStatus).toBe("production");
+    expect(runtime.placeholder).toBe(false);
     expect(runtime.regions.accent.enabled).toBe(false);
     expect(Object.values(runtime.directionMasks ?? {}).every((masks) => masks.accent === null)).toBe(true);
     expect(resolveSpriteAssets(runtime, 0).masks.accent).toBeNull();
-    expect(isProductionReady(runtime)).toBe(false);
+    expect(isProductionReady(runtime)).toBe(true);
   });
 
   it("青少年男生开发预览三方向与三区遮罩完整，accent 保持禁用", () => {
