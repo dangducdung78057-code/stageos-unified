@@ -12,7 +12,8 @@ import {
   spriteManifestSchema,
 } from "./sprite-manifest";
 import { parseSceneData, stageSceneSchema } from "./scene";
-import { sanitizeAppearance } from "@/components/formation/editor-core";
+import { sanitizeAppearance, snapshotScene, useEditorStore } from "@/components/formation/editor-core";
+import { isCharacterQaEnabled } from "@/components/formation-3d-editor";
 
 const baseScene = {
   schemaVersion: 2 as const,
@@ -82,6 +83,43 @@ describe("场景项目隔离与迁移", () => {
       fieldType: "grass", timeOfDay: 12, males: 0, females: 0,
     });
     expect(migrated.schemaVersion).toBe(2);
+  });
+});
+
+describe("角色 QA 调试", () => {
+  it("Production 默认隐藏，显式 QA 开关可开启", () => {
+    expect(isCharacterQaEnabled("production", undefined)).toBe(false);
+    expect(isCharacterQaEnabled("production", "true")).toBe(true);
+    expect(isCharacterQaEnabled("development", undefined)).toBe(true);
+  });
+
+  it("方向与启用区域颜色写入统一 store 并可序列化恢复", () => {
+    const state = useEditorStore.getState();
+    const performer = state.performers.find((item) => item.gender === "female")!;
+    state.setPerformerDirection(performer.id, -45);
+    state.setPerformerAppearanceColor(performer.id, "upper", "#123456");
+    state.setPerformerAppearanceColor(performer.id, "lower", "#234567");
+    state.setPerformerAppearanceColor(performer.id, "footwear", "#345678");
+    state.setPerformerAppearanceColor(performer.id, "accent", "#456789");
+
+    const saved = snapshotScene(useEditorStore.getState());
+    const persisted = saved.performers.find((item) => item.id === performer.id)!;
+    expect(persisted.direction).toBe(-45);
+    expect(persisted.appearance).toMatchObject({
+      upperColor: "#123456", lowerColor: "#234567", footwearColor: "#345678", accentColor: "#456789",
+    });
+
+    useEditorStore.getState().setPerformerDirection(performer.id, 45);
+    useEditorStore.getState().hydrate(saved);
+    expect(useEditorStore.getState().performers.find((item) => item.id === performer.id)).toMatchObject(persisted);
+  });
+
+  it("Manifest 禁用区域拒绝写入", () => {
+    const state = useEditorStore.getState();
+    const performer = state.performers.find((item) => item.gender === "male")!;
+    const before = performer.appearance.accentColor;
+    state.setPerformerAppearanceColor(performer.id, "accent", "#abcdef");
+    expect(useEditorStore.getState().performers.find((item) => item.id === performer.id)?.appearance.accentColor).toBe(before);
   });
 });
 

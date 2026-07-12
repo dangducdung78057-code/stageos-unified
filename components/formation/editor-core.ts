@@ -11,6 +11,7 @@ import { SCENE_SCHEMA_VERSION } from "@/domain/stageos/scene";
 import type { StageSceneData } from "@/domain/stageos/scene";
 import type { PreviewMode } from "@/domain/stageos/types";
 import { isAppearanceRegionEnabled, resolveSpriteId } from "@/domain/stageos/sprite-manifest";
+import type { AppearanceRegion } from "@/domain/stageos/sprite-manifest";
 
 // ---------- 常量 ----------
 
@@ -296,6 +297,8 @@ export type EditorState = {
   select: (id: string | null) => void;
   setDragging: (id: string | null) => void;
   move: (id: string, x: number, z: number) => void;
+  setPerformerDirection: (id: string, direction: number) => void;
+  setPerformerAppearanceColor: (id: string, region: AppearanceRegion, color: string) => void;
   setSnap: (v: boolean) => void;
   setSpacing: (v: number) => void;
   applyPreset: (presetId: string) => void;
@@ -344,6 +347,25 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         s.performers.map((p) =>
           p.id === id ? { ...p, x: clampSnap(x, BOUND_X, s.snap), z: clampSnap(z, BOUND_Z, s.snap) } : p,
         ),
+      ),
+    ),
+  setPerformerDirection: (id, direction) =>
+    set((s) =>
+      withOcclusions(s.performers.map((p) => (p.id === id ? { ...p, direction } : p))),
+    ),
+  setPerformerAppearanceColor: (id, region, color) =>
+    set((s) =>
+      withOcclusions(
+        s.performers.map((p) => {
+          if (p.id !== id || !isAppearanceRegionEnabled(p.spriteId, region)) return p;
+          const field = {
+            upper: "upperColor",
+            lower: "lowerColor",
+            footwear: "footwearColor",
+            accent: "accentColor",
+          }[region] as keyof Performer["appearance"];
+          return { ...p, appearance: { ...p.appearance, [field]: color } };
+        }),
       ),
     ),
   setSnap: (v) => set({ snap: v }),
