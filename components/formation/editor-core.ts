@@ -298,6 +298,7 @@ export type EditorState = {
   setDragging: (id: string | null) => void;
   move: (id: string, x: number, z: number) => void;
   setPerformerDirection: (id: string, direction: number) => void;
+  setPerformerSpriteId: (id: string, spriteId: string) => void;
   setPerformerAppearanceColor: (id: string, region: AppearanceRegion, color: string) => void;
   setSnap: (v: boolean) => void;
   setSpacing: (v: number) => void;
@@ -352,6 +353,12 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   setPerformerDirection: (id, direction) =>
     set((s) =>
       withOcclusions(s.performers.map((p) => (p.id === id ? { ...p, direction } : p))),
+    ),
+  setPerformerSpriteId: (id, spriteId) =>
+    set((s) =>
+      withOcclusions(s.performers.map((p) => (
+        p.id === id ? { ...p, spriteId, appearance: sanitizeAppearance(spriteId, p.appearance) } : p
+      ))),
     ),
   setPerformerAppearanceColor: (id, region, color) =>
     set((s) =>

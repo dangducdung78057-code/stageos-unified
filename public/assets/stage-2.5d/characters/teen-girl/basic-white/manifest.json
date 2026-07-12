@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "assetVersion": "draft-20260711-1",
+  "assetVersion": "preview-20260712-1",
   "characterId": "teen-girl",
   "spriteId": "teen-girl-basic-white",
   "variantId": "basic-white",
@@ -12,14 +12,12 @@
     "upper": { "enabled": true },
     "lower": { "enabled": true },
     "footwear": { "enabled": true },
-    "accent": { "enabled": true }
+    "accent": { "enabled": false }
   },
   "productionBlockers": [
-    "三方向底图未交付",
-    "四区三方向遮罩未交付",
-    "worldHeightCm 尚待角色设定确认",
-    "anchor 与 footBaseline 尚未校准",
-    "QA 验收未完成"
+    "PixiJS 三方向与三区独立换色验收待完成",
+    "云端保存、刷新与恢复验收待完成",
+    "人工生产晋级待批准"
   ],
   "worldHeightCm": 155,
   "canvas": {
@@ -27,14 +25,52 @@
     "height": 1536,
     "unit": "px",
     "origin": "top-left",
-    "footBaselineY": null,
+    "headTopY": 150,
+    "footBaselineY": 1449,
     "anchorX": 0.5,
-    "anchorY": null,
+    "anchorY": 0.943359375,
     "alignment": "center-bottom"
   },
+  "maskEncoding": {
+    "format": "png",
+    "color": "#FFFFFF",
+    "targetAlpha": 255,
+    "backgroundAlpha": 0,
+    "compositing": "alpha-mask"
+  },
+  "defaultColors": {
+    "upper": "#F5F7F7",
+    "lower": "#C8CED2",
+    "footwear": "#30343C",
+    "accent": null
+  },
   "views": {
-    "front": { "image": null, "masks": { "upper": null, "lower": null, "footwear": null, "accent": null } },
-    "front-left": { "image": null, "masks": { "upper": null, "lower": null, "footwear": null, "accent": null } },
-    "front-right": { "image": null, "masks": { "upper": null, "lower": null, "footwear": null, "accent": null } }
+    "front": {
+      "image": "preview/front.png",
+      "masks": {
+        "upper": "preview/masks/upper-front.png",
+        "lower": "preview/masks/lower-front.png",
+        "footwear": "preview/masks/footwear-front.png",
+        "accent": null
+      }
+    },
+    "front-left": {
+      "image": "preview/front-left.png",
+      "masks": {
+        "upper": "preview/masks/upper-front-left.png",
+        "lower": "preview/masks/lower-front-left.png",
+        "footwear": "preview/masks/footwear-front-left.png",
+        "accent": null
+      }
+    },
+    "front-right": {
+      "image": "preview/front-right.png",
+      "masks": {
+        "upper": "preview/masks/upper-front-right.png",
+        "lower": "preview/masks/lower-front-right.png",
+        "footwear": "preview/masks/footwear-front-right.png",
+        "accent": null
+      }
+    }
   }
 }

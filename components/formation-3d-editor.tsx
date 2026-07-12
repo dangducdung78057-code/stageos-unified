@@ -26,7 +26,7 @@ import {
 } from "@/app/actions/formation";
 import { getEntitlements } from "@/domain/stageos/entitlements";
 import type { MembershipTier, PreviewMode } from "@/domain/stageos/types";
-import { getSpriteManifest } from "@/domain/stageos/sprite-manifest";
+import { getSpriteManifest, SPRITE_MANIFESTS } from "@/domain/stageos/sprite-manifest";
 import type { AppearanceRegion } from "@/domain/stageos/sprite-manifest";
 import type { ColorPalette } from "@/lib/stageKnowledge";
 import {
@@ -510,6 +510,7 @@ function CharacterQaPanel({ performer }: { performer: Performer }) {
   const select = useEditorStore((s) => s.select);
   const manifest = getSpriteManifest(performer.spriteId);
   const setDirection = useEditorStore((s) => s.setPerformerDirection);
+  const setSpriteId = useEditorStore((s) => s.setPerformerSpriteId);
   const setColor = useEditorStore((s) => s.setPerformerAppearanceColor);
   if (!manifest) return null;
 
@@ -530,6 +531,21 @@ function CharacterQaPanel({ performer }: { performer: Performer }) {
           {performers.map((item, index) => (
             <option key={item.id} value={item.id}>
               {index + 1}. {item.id} · {item.spriteId}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="mb-3 block text-[11px] font-medium text-[#9fb3c8]" htmlFor="qa-sprite-select">
+        测试素材
+        <select
+          id="qa-sprite-select"
+          value={manifest.spriteId}
+          onChange={(event) => setSpriteId(performer.id, event.target.value)}
+          className="mt-1.5 w-full rounded-md border border-[#343a47] bg-[#1b1f27] px-2 py-2 font-mono text-[10px] text-[#f0f3f6] outline-none focus:border-[#3aa89e]"
+        >
+          {Object.values(SPRITE_MANIFESTS).map((item) => (
+            <option key={item.spriteId} value={item.spriteId}>
+              {item.spriteId} · {item.assetStatus}
             </option>
           ))}
         </select>

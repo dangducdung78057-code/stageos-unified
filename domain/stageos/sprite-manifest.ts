@@ -162,6 +162,53 @@ const PRIMARY_GIRL_BASIC_WHITE: SpriteManifest = spriteManifestSchema.parse({
   placeholder: false,
 });
 
+/** 开发预览人物:青少年女生 · 基础白色服装 */
+const TEEN_GIRL_BASIC_WHITE: SpriteManifest = spriteManifestSchema.parse({
+  characterId: "teen-girl",
+  spriteId: "teen-girl-basic-white",
+  ageSegment: "junior",
+  gender: "female",
+  outfitId: "basic-white",
+  worldHeightCm: 155,
+  imageWidth: 1024,
+  imageHeight: 1536,
+  anchor: { x: 0.5, y: 1449 / 1536 },
+  directions: {
+    front: `${BASE}/teen-girl/basic-white/preview/front.png`,
+    frontLeft: `${BASE}/teen-girl/basic-white/preview/front-left.png`,
+    frontRight: `${BASE}/teen-girl/basic-white/preview/front-right.png`,
+  },
+  regions: { accent: { enabled: false } },
+  masks: {
+    upper: `${BASE}/teen-girl/basic-white/preview/masks/upper-front.png`,
+    lower: `${BASE}/teen-girl/basic-white/preview/masks/lower-front.png`,
+    footwear: `${BASE}/teen-girl/basic-white/preview/masks/footwear-front.png`,
+    accent: null,
+  },
+  directionMasks: {
+    front: {
+      upper: `${BASE}/teen-girl/basic-white/preview/masks/upper-front.png`,
+      lower: `${BASE}/teen-girl/basic-white/preview/masks/lower-front.png`,
+      footwear: `${BASE}/teen-girl/basic-white/preview/masks/footwear-front.png`,
+      accent: null,
+    },
+    frontLeft: {
+      upper: `${BASE}/teen-girl/basic-white/preview/masks/upper-front-left.png`,
+      lower: `${BASE}/teen-girl/basic-white/preview/masks/lower-front-left.png`,
+      footwear: `${BASE}/teen-girl/basic-white/preview/masks/footwear-front-left.png`,
+      accent: null,
+    },
+    frontRight: {
+      upper: `${BASE}/teen-girl/basic-white/preview/masks/upper-front-right.png`,
+      lower: `${BASE}/teen-girl/basic-white/preview/masks/lower-front-right.png`,
+      footwear: `${BASE}/teen-girl/basic-white/preview/masks/footwear-front-right.png`,
+      accent: null,
+    },
+  },
+  assetStatus: "development",
+  placeholder: true,
+});
+
 /** 首批测试人物:小学男生 · 基础白色服装 */
 const PRIMARY_BOY_BASIC_WHITE: SpriteManifest = spriteManifestSchema.parse({
   characterId: "primary-boy",
@@ -212,6 +259,7 @@ const PRIMARY_BOY_BASIC_WHITE: SpriteManifest = spriteManifestSchema.parse({
 export const SPRITE_MANIFESTS: Record<string, SpriteManifest> = {
   [PRIMARY_GIRL_BASIC_WHITE.spriteId]: PRIMARY_GIRL_BASIC_WHITE,
   [PRIMARY_BOY_BASIC_WHITE.spriteId]: PRIMARY_BOY_BASIC_WHITE,
+  [TEEN_GIRL_BASIC_WHITE.spriteId]: TEEN_GIRL_BASIC_WHITE,
 };
 
 export function getSpriteManifest(spriteId: string | null | undefined): SpriteManifest | null {

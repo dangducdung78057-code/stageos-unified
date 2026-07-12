@@ -100,6 +100,16 @@ describe("角色 QA 调试", () => {
     expect(useEditorStore.getState().selectedId).toBe(girl.id);
   });
 
+  it("QA 可将选中女生切换为开发态青少年素材", () => {
+    const state = useEditorStore.getState();
+    const performer = state.performers.find((item) => item.gender === "female")!;
+    state.setPerformerSpriteId(performer.id, "teen-girl-basic-white");
+    const updated = useEditorStore.getState().performers.find((item) => item.id === performer.id)!;
+    expect(updated.spriteId).toBe("teen-girl-basic-white");
+    expect(updated.appearance.accentColor).toBeUndefined();
+    state.setPerformerSpriteId(performer.id, "primary-girl-basic-white");
+  });
+
   it("方向与启用区域颜色写入统一 store 并可序列化恢复", () => {
     const state = useEditorStore.getState();
     const performer = state.performers.find((item) => item.gender === "female")!;
@@ -172,6 +182,37 @@ describe("Sprite Manifest", () => {
       worldHeightCm: 140,
       canvas: { width: 1024, height: 1536, footBaselineY: 1449, anchorX: 0.5, anchorY: 1449 / 1536 },
     });
+  });
+
+  it("青少年女生开发预览三方向与三区遮罩完整，accent 保持禁用", () => {
+    const root = resolve(process.cwd(), "public/assets/stage-2.5d/characters/teen-girl/basic-white");
+    const candidateManifest = JSON.parse(readFileSync(resolve(root, "manifest.json"), "utf8"));
+    const referencedFiles = Object.values(candidateManifest.views).flatMap((view) => {
+      const typedView = view as { image: string; masks: Record<string, string | null> };
+      return [typedView.image, ...Object.entries(typedView.masks)
+        .filter(([region]) => candidateManifest.regions[region].enabled)
+        .map(([, file]) => file)];
+    });
+    expect(referencedFiles).toHaveLength(12);
+    expect(referencedFiles.every((file) => typeof file === "string" && existsSync(resolve(root, file)))).toBe(true);
+    expect(candidateManifest).toMatchObject({
+      assetVersion: "preview-20260712-1",
+      spriteId: "teen-girl-basic-white",
+      assetStatus: "development",
+      placeholder: true,
+      productionReady: false,
+      worldHeightCm: 155,
+      canvas: { width: 1024, height: 1536, footBaselineY: 1449, anchorY: 1449 / 1536 },
+    });
+    expect(candidateManifest.regions.accent.enabled).toBe(false);
+    expect(Object.values(candidateManifest.views).every((view) => (view as { masks: { accent: null } }).masks.accent === null)).toBe(true);
+    const runtime = getSpriteManifest("teen-girl-basic-white")!;
+    expect(runtime.assetStatus).toBe("development");
+    expect(runtime.placeholder).toBe(true);
+    expect(runtime.regions.accent.enabled).toBe(false);
+    expect(Object.values(runtime.directionMasks ?? {}).every((masks) => masks.accent === null)).toBe(true);
+    expect(resolveSpriteAssets(runtime, 0).masks.accent).toBeNull();
+    expect(isProductionReady(runtime)).toBe(false);
   });
 
   it("男生 Preview 仅校验启用区域，禁用 accent 不阻止晋级", () => {
