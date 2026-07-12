@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-11 Phase 1",
+  "decisionVocabulary": ["Allowed", "Review Required", "Full Review", "Reject"],
+  "rules": [
+    {
+      "ruleId": "CRR-001",
+      "name": "Teen Girl cannot migrate to Primary Girl",
+      "when": { "sourceAgeGroup": "Teen", "sourceRole": "Girl", "targetAgeGroup": "Primary", "targetRole": "Girl" },
+      "decision": "Reject",
+      "reason": "Age Boundary Violation"
+    },
+    {
+      "ruleId": "CRR-002",
+      "name": "Center Variant cannot expand to ordinary team members",
+      "when": { "sourceRoleLevel": "Center", "variant": "Center Variant", "targetScope": "All Team Members" },
+      "decision": "Reject",
+      "reason": "Center Priority Restriction"
+    },
+    {
+      "ruleId": "CRR-003",
+      "name": "Choral to Dance requires review",
+      "when": { "sourceProgramType": "Choral", "targetProgramType": "Dance" },
+      "decision": "Review Required",
+      "reason": "Program Type Change",
+      "requiredChecks": ["Movement Compatibility", "Program Type Change", "Stage Role", "Costume Structure Suitability", "Material Motion Suitability"]
+    },
+    {
+      "ruleId": "CRR-004",
+      "name": "Headcount-only expansion in same role and program",
+      "when": { "sameRole": true, "sameProgram": true, "changeType": "Headcount Increase Only" },
+      "decision": "Allowed",
+      "reason": "Identity and program boundaries unchanged",
+      "preconditions": {
+        "baseGarmentUnchanged": true,
+        "cloudCollarUnchanged": true,
+        "paletteRatiosUnchanged": true,
+        "priorityRulesUnchanged": true
+      },
+      "failureDecision": "Full Review"
+    },
+    {
+      "ruleId": "CRR-005",
+      "name": "Age or role responsibility change requires full review",
+      "whenAny": [{ "ageGroupChanged": true }, { "roleResponsibilityChanged": true }],
+      "decision": "Full Review",
+      "reason": "Identity Boundary Change"
+    }
+  ]
+}

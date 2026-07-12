@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-11 Phase 1",
+  "decisionVocabulary": ["Allowed", "Conditional", "Forbidden"],
+  "matrix": [
+    { "ruleId": "APB-001", "ageGroup": "Primary", "programType": "Chorus", "decision": "Allowed" },
+    { "ruleId": "APB-002", "ageGroup": "Primary", "programType": "Dance", "decision": "Conditional", "conditions": ["Child-safe movement", "Non-adult styling", "Production-safe structure"] },
+    { "ruleId": "APB-003", "ageGroup": "Primary", "programType": "Recitation", "decision": "Allowed" },
+    { "ruleId": "APB-004", "ageGroup": "Primary", "programType": "Instrumental", "decision": "Allowed" },
+    { "ruleId": "APB-005", "ageGroup": "Primary", "programType": "Drama", "decision": "Conditional", "conditions": ["Age-appropriate theme", "Role review"] },
+    { "ruleId": "APB-006", "ageGroup": "Primary", "programType": "Opening Ceremony", "decision": "Conditional", "conditions": ["Age-appropriate formal level", "Movement review"] },
+    { "ruleId": "APB-007", "ageGroup": "Teen", "programType": "Chorus", "decision": "Allowed" },
+    { "ruleId": "APB-008", "ageGroup": "Teen", "programType": "Dance", "decision": "Allowed" },
+    { "ruleId": "APB-009", "ageGroup": "Teen", "programType": "Recitation", "decision": "Allowed" },
+    { "ruleId": "APB-010", "ageGroup": "Teen", "programType": "Instrumental", "decision": "Allowed" },
+    { "ruleId": "APB-011", "ageGroup": "Teen", "programType": "Drama", "decision": "Conditional", "conditions": ["Role and theme review"] },
+    { "ruleId": "APB-012", "ageGroup": "Teen", "programType": "Opening Ceremony", "decision": "Allowed" }
+  ],
+  "boundaryRules": [
+    { "ruleId": "APB-013", "when": { "ageGroup": "Primary", "theme": "Adult Formal Theme" }, "decision": "Forbidden", "reason": "Age Boundary Violation" },
+    { "ruleId": "APB-014", "when": { "ageGroup": "Teen", "programType": "Chinese Dance" }, "decision": "Allowed" },
+    { "ruleId": "APB-015", "when": { "ageGroup": "Teen", "style": "Adult Evening Dress Style" }, "decision": "Forbidden", "reason": "Adultized Style Boundary" }
+  ]
+}

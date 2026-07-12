@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-11 Phase 1",
+  "requiredChecks": ["Style Compatibility", "Age Compatibility", "Lighting Compatibility", "Production Compatibility", "Visual Integrity Compatibility"],
+  "rules": [
+    {
+      "ruleId": "MDM-001",
+      "material": "单层云纹薄纱",
+      "migrationClass": "需要局部复验",
+      "decision": "Review Required",
+      "requiredChecks": ["Style Compatibility", "Age Compatibility", "Lighting Compatibility", "Production Compatibility", "Visual Integrity Compatibility"],
+      "notes": "复验透光、叠层、动作拖影与三方向视觉一致性。"
+    },
+    {
+      "ruleId": "MDM-002",
+      "material": "基础梭织",
+      "migrationClass": "可直接迁移",
+      "decision": "Allowed",
+      "requiredChecks": ["Style Compatibility", "Age Compatibility", "Lighting Compatibility", "Production Compatibility", "Visual Integrity Compatibility"],
+      "preconditions": ["版型不变", "年龄组不变", "节目类型不变", "生产规格不变"]
+    },
+    {
+      "ruleId": "MDM-003",
+      "material": "垂顺面料",
+      "migrationClass": "需要局部复验",
+      "decision": "Review Required",
+      "requiredChecks": ["Style Compatibility", "Age Compatibility", "Lighting Compatibility", "Production Compatibility", "Visual Integrity Compatibility"],
+      "notes": "复验动作幅度、垂坠重量和轮廓稳定性。"
+    },
+    {
+      "ruleId": "MDM-004",
+      "material": "云肩面料",
+      "migrationClass": "需要局部复验",
+      "decision": "Review Required",
+      "requiredChecks": ["Style Compatibility", "Age Compatibility", "Lighting Compatibility", "Production Compatibility", "Visual Integrity Compatibility"],
+      "notes": "必须同时通过 Cloud Collar 兼容规则。"
+    },
+    {
+      "ruleId": "MDM-005",
+      "material": "高级织锦",
+      "migrationClass": "禁止迁移",
+      "decision": "Reject",
+      "requiredChecks": ["Style Compatibility", "Age Compatibility", "Lighting Compatibility", "Production Compatibility", "Visual Integrity Compatibility"],
+      "when": { "targetAgeGroup": "Primary", "targetTheme": "Low-age Playful" },
+      "reason": "Age and visual-weight incompatibility"
+    }
+  ]
+}
