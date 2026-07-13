@@ -1,1 +1,0 @@
-GRANT EXECUTE ON FUNCTION public.sync_pdf_capability(text, boolean, text) TO authenticated;
