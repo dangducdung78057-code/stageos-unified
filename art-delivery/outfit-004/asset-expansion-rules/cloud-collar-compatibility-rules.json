@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-11 Phase 1",
+  "compatibilityDimensions": ["Age Group", "Base Garment", "Role Level", "Program Type", "Priority Level"],
+  "variants": [
+    { "variantId": "CC-001", "ageGroups": ["Primary", "Teen"], "baseGarments": ["BG-001"], "roleLevels": ["Team"], "programTypes": ["Chorus", "Recitation"], "priorityLevel": "Basic" },
+    { "variantId": "CC-002", "ageGroups": ["Primary", "Teen"], "baseGarments": ["BG-001", "BG-002"], "roleLevels": ["Team", "Supporting"], "programTypes": ["Chorus", "Instrumental", "Opening Ceremony"], "priorityLevel": "Basic" },
+    { "variantId": "CC-003", "ageGroups": ["Teen"], "baseGarments": ["BG-002"], "roleLevels": ["Supporting", "Center"], "programTypes": ["Dance", "Drama", "Opening Ceremony"], "priorityLevel": "Premium" },
+    { "variantId": "CC-004", "ageGroups": ["Teen"], "baseGarments": ["BG-002"], "roleLevels": ["Center"], "programTypes": ["Chinese Dance", "Dance", "Opening Ceremony"], "priorityLevel": "Signature" }
+  ],
+  "rules": [
+    {
+      "ruleId": "CCC-001",
+      "when": { "variantId": "CC-004", "ageGroup": "Teen", "roleLevel": "Center", "baseGarment": "BG-002" },
+      "decision": "Allowed",
+      "reason": "Authorized signature center configuration"
+    },
+    {
+      "ruleId": "CCC-002",
+      "when": { "variantId": "CC-004", "targetScope": "All Team Members" },
+      "decision": "Reject",
+      "reason": "Center Priority Restriction"
+    },
+    {
+      "ruleId": "CCC-003",
+      "when": { "variantAuthorization": "Unauthorized" },
+      "decision": "Reject",
+      "reason": "Unauthorized Cloud Collar Variant"
+    },
+    {
+      "ruleId": "CCC-004",
+      "when": { "structureStyle": "Adultized" },
+      "decision": "Reject",
+      "reason": "Age Boundary Violation"
+    },
+    {
+      "ruleId": "CCC-005",
+      "when": { "baseGarmentCompatibility": false },
+      "decision": "Reject",
+      "reason": "Base Garment Incompatibility"
+    }
+  ]
+}

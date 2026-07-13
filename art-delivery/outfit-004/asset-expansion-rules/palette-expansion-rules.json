@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-11 Phase 1",
+  "layerConstraints": {
+    "signature": { "ruleId": "PAL-001", "operator": "<=", "percent": 12, "decisionOnViolation": "Reject" },
+    "premium": { "ruleId": "PAL-002", "operator": "<=", "percent": 35, "decisionOnViolation": "Reject" },
+    "basicUnifiedArea": { "ruleId": "PAL-003", "operator": ">=", "percent": 60, "decisionOnViolation": "Reject" }
+  },
+  "rules": [
+    {
+      "ruleId": "PAL-004",
+      "name": "同色系明度扩展",
+      "when": { "expansionType": "Same Hue Lightness Extension", "teamPrimaryColorIdentityChanged": false },
+      "decision": "Allowed",
+      "preconditions": ["PAL-001", "PAL-002", "PAL-003"]
+    },
+    {
+      "ruleId": "PAL-005",
+      "name": "新增高饱和随机撞色",
+      "when": { "expansionType": "Random High-Saturation Contrast" },
+      "decision": "Reject",
+      "reason": "Uncontrolled palette identity expansion"
+    },
+    {
+      "ruleId": "PAL-006",
+      "name": "改变团队主色识别",
+      "when": { "teamPrimaryColorIdentityChanged": true },
+      "decision": "Reject",
+      "reason": "Team identity violation"
+    },
+    {
+      "ruleId": "PAL-007",
+      "name": "LED 环境变化",
+      "when": { "lightingEnvironmentChanged": "LED" },
+      "decision": "Review Required",
+      "requiredChecks": ["Color Shift", "Reflectance", "Camera Capture", "Team Recognition"]
+    },
+    {
+      "ruleId": "PAL-008",
+      "name": "禁止通过新增颜色绕过三层比例",
+      "when": { "newColorIntroduced": true, "layerRatiosReclassifiedToBypassLimits": true },
+      "decision": "Reject",
+      "reason": "Layer ratio circumvention"
+    }
+  ]
+}

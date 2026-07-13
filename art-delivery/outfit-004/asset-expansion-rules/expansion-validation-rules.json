@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-11 Phase 1",
+  "pipelineId": "EVP-001",
+  "name": "Asset Expansion Validation Pipeline",
+  "skipPolicy": "No stage may be skipped",
+  "stages": [
+    { "order": 1, "stageId": "EVP-STAGE-001", "name": "Expansion Request", "required": true },
+    { "order": 2, "stageId": "EVP-STAGE-002", "name": "Character Check", "required": true, "ruleSources": ["character-reuse-rules.json"] },
+    { "order": 3, "stageId": "EVP-STAGE-003", "name": "Material DNA Check", "required": true, "ruleSources": ["material-dna-migration-rules.json"] },
+    { "order": 4, "stageId": "EVP-STAGE-004", "name": "Palette Check", "required": true, "ruleSources": ["palette-expansion-rules.json"] },
+    { "order": 5, "stageId": "EVP-STAGE-005", "name": "Cloud Collar Check", "required": true, "ruleSources": ["cloud-collar-compatibility-rules.json"] },
+    { "order": 6, "stageId": "EVP-STAGE-006", "name": "Age / Program Check", "required": true, "ruleSources": ["age-program-boundary-rules.json"] },
+    { "order": 7, "stageId": "EVP-STAGE-007", "name": "Production Check", "required": true, "frozenContract": true },
+    { "order": 8, "stageId": "EVP-STAGE-008", "name": "Visual Integrity Check", "required": true, "frozenContract": true },
+    { "order": 9, "stageId": "EVP-STAGE-009", "name": "Allow / Review / Reject", "required": true }
+  ],
+  "decisionRules": [
+    { "ruleId": "EVR-001", "whenAnyStage": "Reject", "finalDecision": "Reject" },
+    { "ruleId": "EVR-002", "whenAnyStage": "Forbidden", "finalDecision": "Reject" },
+    { "ruleId": "EVR-003", "whenAnyStage": "Full Review", "finalDecision": "Full Review" },
+    { "ruleId": "EVR-004", "whenAnyStage": "Review Required", "finalDecision": "Review Required" },
+    { "ruleId": "EVR-005", "whenAnyStage": "Conditional", "finalDecision": "Review Required" },
+    { "ruleId": "EVR-006", "whenAllStages": "Allowed", "finalDecision": "Allowed" },
+    { "ruleId": "EVR-007", "whenStageSkipped": true, "finalDecision": "Reject", "reason": "Validation pipeline bypass prohibited" }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "Gate-11 Phase 1",
+  "cases": [
+    {
+      "caseId": "VAL-001",
+      "name": "Teen Girl → Primary Girl",
+      "input": { "sourceAgeGroup": "Teen", "sourceRole": "Girl", "targetAgeGroup": "Primary", "targetRole": "Girl" },
+      "matchedRuleIds": ["CRR-001"],
+      "expectedDecision": "Reject",
+      "actualDecision": "Reject",
+      "pass": true
+    },
+    {
+      "caseId": "VAL-002",
+      "name": "Center Variant 全队复用",
+      "input": { "sourceRoleLevel": "Center", "variant": "Center Variant", "targetScope": "All Team Members" },
+      "matchedRuleIds": ["CRR-002", "CCC-002"],
+      "expectedDecision": "Reject",
+      "actualDecision": "Reject",
+      "pass": true
+    },
+    {
+      "caseId": "VAL-003",
+      "name": "Choral → Dance",
+      "input": { "sourceProgramType": "Choral", "targetProgramType": "Dance" },
+      "matchedRuleIds": ["CRR-003"],
+      "expectedDecision": "Review Required",
+      "actualDecision": "Review Required",
+      "pass": true
+    },
+    {
+      "caseId": "VAL-004",
+      "name": "同角色同节目增加人数",
+      "input": { "sameRole": true, "sameProgram": true, "changeType": "Headcount Increase Only", "baseGarmentUnchanged": true, "cloudCollarUnchanged": true, "paletteRatiosUnchanged": true, "priorityRulesUnchanged": true },
+      "matchedRuleIds": ["CRR-004"],
+      "expectedDecision": "Allowed",
+      "actualDecision": "Allowed",
+      "pass": true
+    },
+    {
+      "caseId": "VAL-005",
+      "name": "同色系扩展",
+      "input": { "expansionType": "Same Hue Lightness Extension", "teamPrimaryColorIdentityChanged": false, "signaturePercent": 10, "premiumPercent": 30, "basicUnifiedAreaPercent": 65 },
+      "matchedRuleIds": ["PAL-001", "PAL-002", "PAL-003", "PAL-004"],
+      "expectedDecision": "Allowed",
+      "actualDecision": "Allowed",
+      "pass": true
+    },
+    {
+      "caseId": "VAL-006",
+      "name": "高饱和随机扩色",
+      "input": { "expansionType": "Random High-Saturation Contrast" },
+      "matchedRuleIds": ["PAL-005"],
+      "expectedDecision": "Reject",
+      "actualDecision": "Reject",
+      "pass": true
+    },
+    {
+      "caseId": "VAL-007",
+      "name": "CC-004 主角使用",
+      "input": { "variantId": "CC-004", "ageGroup": "Teen", "roleLevel": "Center", "baseGarment": "BG-002", "programType": "Chinese Dance" },
+      "matchedRuleIds": ["CCC-001", "APB-014"],
+      "expectedDecision": "Allowed",
+      "actualDecision": "Allowed",
+      "pass": true
+    },
+    {
+      "caseId": "VAL-008",
+      "name": "CC-004 全队使用",
+      "input": { "variantId": "CC-004", "targetScope": "All Team Members" },
+      "matchedRuleIds": ["CCC-002"],
+      "expectedDecision": "Reject",
+      "actualDecision": "Reject",
+      "pass": true
+    },
+    {
+      "caseId": "VAL-009",
+      "name": "高级织锦用于低龄童趣节目",
+      "input": { "material": "高级织锦", "targetAgeGroup": "Primary", "targetTheme": "Low-age Playful" },
+      "matchedRuleIds": ["MDM-005"],
+      "expectedDecision": "Reject",
+      "actualDecision": "Reject",
+      "pass": true
+    },
+    {
+      "caseId": "VAL-010",
+      "name": "LED 环境变化后的复验",
+      "input": { "lightingEnvironmentChanged": "LED" },
+      "matchedRuleIds": ["PAL-007"],
+      "expectedDecision": "Review Required",
+      "actualDecision": "Review Required",
+      "pass": true
+    }
+  ]
+}
