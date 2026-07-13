@@ -1,6 +1,6 @@
 # StageOS Gate-24 Human Approval Decision Record
 
-> 本文档记录 Gate-24 Build Authorization Proposal 的人工审核状态与候选授权边界。本记录当前仅创建为待审核记录，不启动 Build，不授权 Release，也不执行任何 Lifecycle Transition。
+> 本文档记录 Gate-24 Build Authorization Proposal 的人工审核决定与授权边界。本记录批准受限的 Gate-24 Build，但不启动 Build，不授权 Release，也不执行任何 Lifecycle Transition。
 
 ## Record Status
 
@@ -9,9 +9,9 @@
 | Repository | `https://github.com/dangducdung78057-code/stageos-unified.git` |
 | Branch | `stageos-phase-2-governance-archive` |
 | Record Input Commit | `7ffefc54817eb5a7424c91cd9eecffc86b40f271` |
-| APPROVAL_STATUS | `PENDING` |
+| APPROVAL_STATUS | `APPROVED` |
 | Gate-24 Build | `NOT_STARTED` |
-| Build Execution Authorization | `NOT_GRANTED` |
+| Build Execution Authorization | `GRANTED` |
 | Release | `NOT_AUTHORIZED` |
 | Lifecycle Transition | `NOT_AUTHORIZED` |
 
@@ -22,15 +22,15 @@
 | Approval ID | `STAGEOS-GATE-24-HUMAN-APPROVAL-001` |
 | Gate ID | `Gate-24` |
 | Proposal Reference | `docs/STAGEOS_GATE_24_BUILD_AUTHORIZATION_PROPOSAL.md` at commit `7ffefc54817eb5a7424c91cd9eecffc86b40f271` |
-| Reviewer Reference | `PENDING_ASSIGNMENT` |
-| Approval Timestamp (UTC) | `NOT_SET` — no approval decision has been issued |
+| Reviewer Reference | `StageOS Project Owner` |
+| Approval Timestamp (UTC) | `2026-07-13T13:25:29Z` |
 | Record Created At (UTC) | `2026-07-13T09:20:49Z` |
 
-Reviewer Reference and Approval Timestamp must be populated by an identified human reviewer only when a final `APPROVED` or `REJECTED` decision is issued. Record creation time must not be interpreted as approval time.
+The identified human reviewer issued the `APPROVED` decision at the recorded UTC timestamp. Record creation time remains distinct from approval time.
 
 ## 2. Review Scope
 
-The pending Human Review covers the following verified inputs:
+The completed Human Review covers the following verified inputs:
 
 - **Gate-24 Planning Proposal 已完成：** `docs/STAGEOS_GATE_24_PLANNING_PROPOSAL.md` is recorded at commit `8d45d3021da76eb41e85bc3fed6fcefb139cddb9`.
 - **Build Authorization Proposal 已完成：** `docs/STAGEOS_GATE_24_BUILD_AUTHORIZATION_PROPOSAL.md` is recorded at commit `7ffefc54817eb5a7424c91cd9eecffc86b40f271`.
@@ -38,13 +38,13 @@ The pending Human Review covers the following verified inputs:
 - Gate-01～23 remain frozen and outside this review's modification authority.
 - Production Asset `G19-PROD-ASSET-001` remains unchanged and outside this review's modification authority.
 
-This review evaluates only whether the proposed Gate-24 Build boundary is suitable for a later explicit approval decision. It does not execute that boundary.
+This review confirms the approved Gate-24 Build boundary. The approval decision does not execute that boundary or start Build.
 
 ## 3. Approved Scope
 
-The following scope is a **candidate scope pending approval**. It becomes approved only if this record is explicitly updated by an identified human reviewer to `APPROVED` with a valid Approval Timestamp.
+The following scope is **approved** by the identified human reviewer and is the complete Build execution boundary.
 
-### Allowed after explicit approval
+### Approved operations
 
 - 仅执行批准范围内 Gate-24 Build。
 - 执行 Gate-24 Build 所必需的只读或非破坏性验证。
@@ -62,11 +62,11 @@ The following scope is a **candidate scope pending approval**. It becomes approv
 - 修改 Phase 2 Archive、Archive Commit、Closure Commit、Baseline Commit 或归档 Tag。
 - 将 Gate-24 Build 结果解释为 Release 或 Lifecycle Transition 授权。
 
-Because `APPROVAL_STATUS` is currently `PENDING`, no allowed operation listed above may be executed now.
+The approved operations may begin only under a separate explicit Build start instruction. This approval update itself does not start Gate-24 Build.
 
 ## 4. Approval Decision
 
-`APPROVAL_STATUS: PENDING`
+`APPROVAL_STATUS: APPROVED`
 
 Allowed decision values for this record are exclusively:
 
@@ -74,17 +74,17 @@ Allowed decision values for this record are exclusively:
 - `REJECTED`
 - `PENDING`
 
-Current decision: `PENDING`.
+Current decision: `APPROVED`.
 
-**Approval Record 创建 ≠ Build Execution Authorization。**
+**Approval Record 更新 ≠ Build 已启动。**
 
-This pending record does not grant permission to start Gate-24 Build. A later human decision must explicitly set the status to `APPROVED`, identify the reviewer, record the Approval Timestamp in UTC, confirm the exact execution boundary, and issue an auditable authorization before Build can begin.
+The `StageOS Project Owner` grants `Build Execution Authorization: GRANTED` for the exact scope in this record. Gate-24 Build remains `NOT_STARTED` until a separate explicit Build start instruction is issued; Release and Lifecycle Transition remain unauthorized.
 
 ## 5. Build Authorization Boundary
 
 ### Allowed Operations
 
-If and only if a later human decision is `APPROVED`, operations are limited to the exact Gate-24 Build scope defined in the Build Authorization Proposal and any narrower conditions written into the approval decision. No implicit permissions are granted.
+Authorized operations are limited to the exact Gate-24 Build scope defined in the Build Authorization Proposal and the narrower conditions written into this approval decision. No implicit permissions are granted, and execution requires a separate explicit Build start instruction.
 
 ### Execution Limit
 
@@ -112,10 +112,10 @@ Any future authorized Build must use an additive, auditable rollback procedure l
 
 | Field | Value |
 |---|---|
-| expiresAt | `NOT_SET` — authorization is pending and no validity period has begun |
-| Revocation State | `NOT_APPLICABLE_WHILE_PENDING` |
+| expiresAt | `EVENT_BOUNDARY: GATE_24_BUILD_COMPLETION_OR_REVOCATION` |
+| Revocation State | `ACTIVE` |
 
-If a future decision becomes `APPROVED`, the human reviewer must set a concrete UTC `expiresAt` or explicitly record a bounded event-based expiration before Build begins.
+Authorization expires automatically when the approved Gate-24 Build scope is completed or any revocation condition is met, whichever occurs first.
 
 Revocation conditions include:
 
@@ -144,14 +144,14 @@ On revocation, work must stop immediately and enter Human Review. Revocation doe
 
 ## Decision Boundary
 
-At record creation:
+At approval decision:
 
-- `APPROVAL_STATUS: PENDING`
+- `APPROVAL_STATUS: APPROVED`
 - `Gate-24 Build: NOT_STARTED`
-- `Build Execution Authorization: NOT_GRANTED`
+- `Build Execution Authorization: GRANTED`
 - `Production Asset: UNCHANGED`
 - `Gate-01～23: FROZEN`
 - `Release: NOT_AUTHORIZED`
 - `Lifecycle Transition: NOT_AUTHORIZED`
 
-No action may infer approval from this file's existence, review, commit, or future archival. Only an explicit, identified, timestamped human decision can change the approval status.
+This identified and timestamped human decision grants only the bounded Gate-24 Build authorization stated above. It does not start Build, authorize Release, or authorize Lifecycle Transition.
