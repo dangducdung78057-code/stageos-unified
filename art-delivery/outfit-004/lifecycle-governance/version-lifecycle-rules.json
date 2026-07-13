@@ -1,0 +1,50 @@
+{
+  "rulesId": "G23-VERSION-LIFECYCLE-v1.0",
+  "baseline": {
+    "assetId": "G19-PROD-ASSET-001",
+    "version": "v1.0",
+    "hash": "17d33f862e3486fd4ff225262e8f85ef856597f3ad97a793fa9a4d3320e3ba36",
+    "overwriteAllowed": false,
+    "readOnly": true
+  },
+  "stateFlow": [
+    "VERSION_PROPOSED",
+    "VERSION_REVIEW",
+    "VERSION_ACCEPTED",
+    "VERSION_ACTIVE",
+    "VERSION_ARCHIVED"
+  ],
+  "exceptionStates": ["VERSION_BLOCKED", "VERSION_INVALIDATED"],
+  "newVersionRequirements": [
+    "NEW_VERSION",
+    "NEW_HASH",
+    "NEW_REVIEW",
+    "SEPARATE_FILE",
+    "HUMAN_ACCEPTANCE"
+  ],
+  "versionRecordRequiredFields": [
+    "versionId",
+    "assetId",
+    "version",
+    "sourceVersion",
+    "sourceHash",
+    "versionHash",
+    "fileReference",
+    "requestId",
+    "executionAuthorizationReference",
+    "reviewReference",
+    "acceptanceReference",
+    "createdTimestamp",
+    "status"
+  ],
+  "rules": {
+    "versionReuseAllowed": false,
+    "oldAcceptanceReusable": false,
+    "historicalVersionsReadOnly": true,
+    "maximumActiveVersions": 1,
+    "structuralChangeResult": "NEW_GATE_REQUIRED",
+    "incompleteResult": "VERSION_BLOCKED"
+  },
+  "newVersionsCreated": 0,
+  "currentActiveVersion": null
+}

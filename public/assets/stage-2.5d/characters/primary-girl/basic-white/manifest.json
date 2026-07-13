@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 2,
+  "assetVersion": "preview-20260711-1",
+  "characterId": "primary-girl",
+  "spriteId": "primary-girl-basic-white",
+  "variantId": "basic-white",
+  "style": "2.5d-semi-realistic",
+  "assetStatus": "production",
+  "placeholder": false,
+  "productionReady": true,
+  "worldHeightCm": 140,
+  "canvas": {
+    "width": 1024,
+    "height": 1536,
+    "unit": "px",
+    "origin": "top-left",
+    "headTopY": 150,
+    "footBaselineY": 1449,
+    "anchorX": 0.5,
+    "anchorY": 0.943359375,
+    "alignment": "center-bottom"
+  },
+  "maskEncoding": {
+    "format": "png",
+    "color": "#FFFFFF",
+    "targetAlpha": 255,
+    "backgroundAlpha": 0,
+    "compositing": "alpha-mask"
+  },
+  "defaultColors": {
+    "upper": "#F5F7F7",
+    "lower": "#C8CED2",
+    "footwear": "#30343C",
+    "accent": "#5F9998"
+  },
+  "views": {
+    "front": {
+      "image": "preview/front.png",
+      "masks": {
+        "upper": "preview/masks/upper-front.png",
+        "lower": "preview/masks/lower-front.png",
+        "footwear": "preview/masks/footwear-front.png",
+        "accent": "preview/masks/accent-front.png"
+      }
+    },
+    "front-left": {
+      "image": "preview/front-left.png",
+      "masks": {
+        "upper": "preview/masks/upper-front-left.png",
+        "lower": "preview/masks/lower-front-left.png",
+        "footwear": "preview/masks/footwear-front-left.png",
+        "accent": "preview/masks/accent-front-left.png"
+      }
+    },
+    "front-right": {
+      "image": "preview/front-right.png",
+      "masks": {
+        "upper": "preview/masks/upper-front-right.png",
+        "lower": "preview/masks/lower-front-right.png",
+        "footwear": "preview/masks/footwear-front-right.png",
+        "accent": "preview/masks/accent-front-right.png"
+      }
+    }
+  }
+}

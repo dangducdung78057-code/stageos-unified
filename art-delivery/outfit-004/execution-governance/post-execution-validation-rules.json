@@ -1,0 +1,45 @@
+{
+  "rulesId": "G22-POST-EXECUTION-VALIDATION-v1.0",
+  "checks": {
+    "outputFile": {
+      "requirements": ["EXISTS", "READABLE", "UNIQUE_REFERENCE", "APPROVED_FORMAT"],
+      "failureResult": "BLOCKED_OUTPUT_FILE_INVALID"
+    },
+    "newVersion": {
+      "appliesTo": "VERSION_UPDATE",
+      "requirements": ["DIFFERENT_FROM_V1_0", "SOURCE_RELATION_RECORDED", "SEPARATE_FILE"],
+      "failureResult": "BLOCKED_NEW_VERSION_MISSING"
+    },
+    "newHash": {
+      "appliesTo": "CONTENT_CHANGE",
+      "requirements": ["SHA256_RECORDED", "MATCHES_OUTPUT", "DIFFERENT_FROM_SOURCE_HASH"],
+      "failureResult": "BLOCKED_NEW_HASH_MISSING_OR_INVALID"
+    },
+    "auditRecord": {
+      "requiredFields": ["executionRequestId", "sourceRequestId", "authorizationReference", "executorReference", "executionTimestamp", "sourceVersion", "sourceHash", "outputVersion", "outputHash", "approvedScope", "actualChangeSet", "validationDecision", "evidenceReferences"],
+      "appendOnly": true,
+      "failureResult": "BLOCKED_AUDIT_INCOMPLETE"
+    },
+    "originalVersionProtection": {
+      "assetId": "G19-PROD-ASSET-001",
+      "version": "v1.0",
+      "hash": "17d33f862e3486fd4ff225262e8f85ef856597f3ad97a793fa9a4d3320e3ba36",
+      "overwriteAllowed": false,
+      "failureResult": "BLOCKED_ORIGINAL_VERSION_OVERWRITE"
+    },
+    "humanAcceptance": {
+      "requiredBeforeFinalAcceptance": true,
+      "requiredFields": ["reviewerReference", "acceptanceDecision", "acceptanceTimestamp", "acceptedVersion", "acceptedHash"],
+      "sourceAcceptanceReusable": false,
+      "pendingState": "PASS_PENDING_HUMAN_ACCEPTANCE",
+      "allowedFinalResults": ["HUMAN_ACCEPTED", "HUMAN_REJECTED"]
+    }
+  },
+  "postExecutionResults": ["PASS_PENDING_HUMAN_ACCEPTANCE", "BLOCKED"],
+  "automaticHumanAcceptance": false,
+  "currentStatus": "NOT_STARTED",
+  "outputsValidated": 0,
+  "batch": false,
+  "teamExpansion": false,
+  "procurementRelease": false
+}

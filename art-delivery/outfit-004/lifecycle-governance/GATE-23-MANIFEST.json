@@ -1,0 +1,55 @@
+{
+  "gateId": "GATE-23",
+  "gateStatus": "BUILD_COMPLETED",
+  "system": "PRODUCTION_ASSET_LIFECYCLE_GOVERNANCE",
+  "baselineAsset": {
+    "productionAssetId": "G19-PROD-ASSET-001",
+    "version": "v1.0",
+    "status": "PRODUCTION_ASSET_ACCEPTED",
+    "hash": "17d33f862e3486fd4ff225262e8f85ef856597f3ad97a793fa9a4d3320e3ba36"
+  },
+  "upstream": {
+    "gate21": "COMPLETED",
+    "gate22": "COMPLETED",
+    "gate22Manifest": "../execution-governance/GATE-22-MANIFEST.json"
+  },
+  "governanceScope": [
+    "ASSET_LIFECYCLE_STATES",
+    "VERSION_LIFECYCLE",
+    "CHANGE_HISTORY",
+    "ROLLBACK_GOVERNANCE",
+    "RETIREMENT_GOVERNANCE",
+    "AUDIT_ARCHIVE"
+  ],
+  "forbiddenActions": [
+    "EXECUTE_LIFECYCLE_TRANSITION",
+    "ACTIVATE_G19_PROD_ASSET_001",
+    "CREATE_NEW_VERSION",
+    "EXECUTE_ROLLBACK",
+    "EXECUTE_RETIREMENT",
+    "CREATE_ASSET",
+    "MODIFY_G19_PROD_ASSET_001_V1_0",
+    "MODIFY_GATE_01_THROUGH_22"
+  ],
+  "files": [
+    "GATE-23-MANIFEST.json",
+    "asset-lifecycle-rules.json",
+    "version-lifecycle-rules.json",
+    "change-history-contract.json",
+    "rollback-rules.json",
+    "retirement-rules.json",
+    "audit-archive-rules.json",
+    "validation-cases.json",
+    "GATE-23-REPORT.md"
+  ],
+  "lifecycleTransitionsExecuted": 0,
+  "newVersionsCreated": 0,
+  "rollbacksExecuted": 0,
+  "retirementsExecuted": 0,
+  "assetsCreated": 0,
+  "assetActivated": false,
+  "batch": false,
+  "teamExpansion": false,
+  "procurementRelease": false,
+  "secondProductionAssetCreated": false
+}

@@ -1,0 +1,38 @@
+{
+  "rulesId": "G21-REQUEST-CLASSIFICATION-RULES-v1.0",
+  "priorityOrder": [
+    "PRODUCTION_SCALE_REQUEST",
+    "ASSET_EXPANSION_REQUEST",
+    "VERSION_UPDATE_REQUEST",
+    "MAINTENANCE_REQUEST"
+  ],
+  "strictestMatchWins": true,
+  "classifications": {
+    "MAINTENANCE_REQUEST": {
+      "ruleId": "G21-CLASS-MAINTENANCE",
+      "scope": ["FILE_REPAIR", "METADATA_COMPLETION", "NON_CONTENT_OPTIMIZATION"],
+      "decision": "ALLOWED",
+      "contentChangeAllowed": false
+    },
+    "VERSION_UPDATE_REQUEST": {
+      "ruleId": "G21-CLASS-VERSION",
+      "scope": ["MINOR_VERSION_ADJUSTMENT", "COMPATIBLE_MAINTENANCE", "CONTENT_QUALITY_REVISION"],
+      "decision": "REVIEW_REQUIRED",
+      "requires": ["NEW_VERSION", "NEW_HASH", "NEW_REVIEW"]
+    },
+    "ASSET_EXPANSION_REQUEST": {
+      "ruleId": "G21-CLASS-ASSET-EXPANSION",
+      "scope": ["NEW_CHARACTER", "NEW_PROGRAM", "NEW_PALETTE_SYSTEM", "NEW_MATERIAL_SYSTEM", "NEW_CLOUD_COLLAR_STRUCTURE", "SECOND_PRODUCTION_ASSET"],
+      "decision": "NEW_GATE_REQUIRED"
+    },
+    "PRODUCTION_SCALE_REQUEST": {
+      "ruleId": "G21-CLASS-PRODUCTION-SCALE",
+      "scope": ["BATCH_PRODUCTION", "TEAM_EXPANSION", "PROCUREMENT_RELEASE", "PRODUCTION_LINE_EXPANSION"],
+      "decision": "BLOCKED",
+      "reasonCode": "BLOCKED_PENDING_NEW_GATE"
+    }
+  },
+  "mixedRequestPolicy": "APPLY_HIGHEST_PRIORITY_MATCH",
+  "requesterLabelIsAuthoritative": false,
+  "chatStateCreatesAuthorization": false
+}

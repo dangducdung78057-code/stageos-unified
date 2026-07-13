@@ -1,0 +1,35 @@
+{
+  "contractId": "G21-AUDIT-CONTRACT-v1.0",
+  "requiredFields": [
+    "requestId",
+    "decision",
+    "ruleId",
+    "reviewer",
+    "timestamp",
+    "evidenceReference"
+  ],
+  "recommendedFields": [
+    "requestType",
+    "normalizedClassification",
+    "reasonCode",
+    "targetAssetId",
+    "targetVersion",
+    "targetHash",
+    "approvalRoute",
+    "relatedGate",
+    "riskLevel",
+    "inputHash",
+    "decisionEngineVersion",
+    "previousDecisionReference",
+    "executionAuthorized"
+  ],
+  "writePolicy": "APPEND_ONLY",
+  "overwriteAllowed": false,
+  "requestIdReuseAllowed": false,
+  "decisionRevisionPolicy": "APPEND_NEW_RECORD",
+  "timestampStandard": "UTC_ISO_8601",
+  "evidenceMustResolve": true,
+  "chatStateAsSoleEvidenceAllowed": false,
+  "incompleteAuditDecision": "BLOCKED",
+  "incompleteAuditReasonCode": "BLOCKED_AUDIT_INCOMPLETE"
+}

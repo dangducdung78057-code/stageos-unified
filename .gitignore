@@ -13,3 +13,10 @@ __v0_jsx-dev-runtime.ts
 node_modules
 .next/
 .DS_Store
+*.tsbuildinfo
+app-source.zip
+assets-source.zip
+imported-app/
+imported-assets/
+.handoff/
+.vercel

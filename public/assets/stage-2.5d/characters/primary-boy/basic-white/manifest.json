@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 2,
+  "assetVersion": "preview-20260711-1",
+  "characterId": "primary-boy",
+  "spriteId": "primary-boy-basic-white",
+  "variantId": "basic-white",
+  "style": "2.5d-semi-realistic",
+  "assetStatus": "production",
+  "placeholder": false,
+  "productionReady": true,
+  "regions": {
+    "upper": { "enabled": true },
+    "lower": { "enabled": true },
+    "footwear": { "enabled": true },
+    "accent": { "enabled": false }
+  },
+  "productionBlockers": [],
+  "worldHeightCm": 142,
+  "canvas": {
+    "width": 1024,
+    "height": 1536,
+    "unit": "px",
+    "origin": "top-left",
+    "footBaselineY": 1449,
+    "anchorX": 0.5,
+    "anchorY": 0.943359375,
+    "alignment": "center-bottom"
+  },
+  "views": {
+    "front": {
+      "image": "preview/front.png",
+      "masks": {
+        "upper": "preview/masks/upper-front.png",
+        "lower": "preview/masks/lower-front.png",
+        "footwear": "preview/masks/footwear-front.png",
+        "accent": null
+      }
+    },
+    "frontLeft": {
+      "image": "preview/front-left.png",
+      "masks": {
+        "upper": "preview/masks/upper-front-left.png",
+        "lower": "preview/masks/lower-front-left.png",
+        "footwear": "preview/masks/footwear-front-left.png",
+        "accent": null
+      }
+    },
+    "frontRight": {
+      "image": "preview/front-right.png",
+      "masks": {
+        "upper": "preview/masks/upper-front-right.png",
+        "lower": "preview/masks/lower-front-right.png",
+        "footwear": "preview/masks/footwear-front-right.png",
+        "accent": null
+      }
+    }
+  }
+}

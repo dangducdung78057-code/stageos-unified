@@ -1,0 +1,43 @@
+{
+  "rulesId": "G23-RETIREMENT-v1.0",
+  "stateFlow": [
+    "RETIREMENT_REQUEST",
+    "RETIREMENT_REVIEW",
+    "RETIREMENT_APPROVAL",
+    "ARCHIVED",
+    "RETIRED"
+  ],
+  "requiredFields": [
+    "retirementRequestId",
+    "assetId",
+    "retirementReason",
+    "finalVersion",
+    "finalHash",
+    "reviewer",
+    "approvalReference",
+    "timestamp",
+    "archiveReference",
+    "retirementDecision"
+  ],
+  "reviewRequirements": [
+    "CURRENT_ASSET_IDENTITY_VERIFIED",
+    "CURRENT_VERSION_VERIFIED",
+    "FINAL_HASH_MATCH",
+    "NO_PENDING_VERSION_UPDATE",
+    "NO_PENDING_ROLLBACK",
+    "AUDIT_ARCHIVE_COMPLETE",
+    "RETIREMENT_IMPACT_DEFINED",
+    "HUMAN_RETIREMENT_APPROVAL_PASS"
+  ],
+  "rules": {
+    "archiveBeforeRetire": true,
+    "reactivationAllowed": false,
+    "reactivationResult": "NEW_GATE_REQUIRED",
+    "deleteAssetAllowed": false,
+    "deleteHistoryAllowed": false,
+    "replacementAssetAuthorizationGranted": false
+  },
+  "failureResult": "BLOCKED_RETIREMENT_INCOMPLETE",
+  "currentStatus": "NOT_STARTED",
+  "retirementsExecuted": 0
+}

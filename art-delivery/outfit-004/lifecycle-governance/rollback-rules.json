@@ -1,0 +1,47 @@
+{
+  "rulesId": "G23-ROLLBACK-v1.0",
+  "stateFlow": [
+    "ROLLBACK_REQUEST",
+    "ROLLBACK_REVIEW",
+    "ROLLBACK_APPROVAL",
+    "ROLLBACK_PREPARATION",
+    "ROLLBACK_ACTIVATION",
+    "POST_ROLLBACK_VALIDATION",
+    "HUMAN_ACCEPTANCE"
+  ],
+  "eligibilityRequirements": [
+    "TARGET_VERSION_EXISTS",
+    "TARGET_VERSION_PREVIOUSLY_HUMAN_ACCEPTED",
+    "TARGET_HASH_MATCHES_ARCHIVE",
+    "VERSION_HISTORY_COMPLETE",
+    "APPROVAL_HISTORY_COMPLETE",
+    "CHANGE_HISTORY_COMPLETE",
+    "VALIDATION_RECORDS_COMPLETE",
+    "HUMAN_ROLLBACK_APPROVAL_PASS"
+  ],
+  "rollbackRecordRequiredFields": [
+    "rollbackId",
+    "assetId",
+    "sourceCurrentVersion",
+    "targetHistoricalVersion",
+    "targetHistoricalHash",
+    "rollbackReason",
+    "approvalReference",
+    "activationTimestamp",
+    "postRollbackValidation",
+    "humanAcceptance"
+  ],
+  "prohibitions": [
+    "UNRECORDED_ROLLBACK",
+    "OVERWRITE_CURRENT_VERSION",
+    "USE_UNACCEPTED_VERSION",
+    "USE_HASH_MISMATCH_VERSION",
+    "DELETE_PRE_ROLLBACK_VERSION",
+    "SKIP_POST_ROLLBACK_VALIDATION",
+    "SKIP_HUMAN_ACCEPTANCE"
+  ],
+  "historicalRewriteAllowed": false,
+  "failureResult": "BLOCKED_ROLLBACK_INVALID",
+  "currentStatus": "NOT_STARTED",
+  "rollbacksExecuted": 0
+}

@@ -1,0 +1,46 @@
+{
+  "contractId": "G23-CHANGE-HISTORY-v1.0",
+  "writePolicy": "APPEND_ONLY",
+  "overwriteAllowed": false,
+  "deleteAllowed": false,
+  "requiredFields": [
+    "changeId",
+    "assetId",
+    "previousVersion",
+    "newVersion",
+    "changeType",
+    "reason",
+    "requestId",
+    "approvalReference",
+    "reviewer",
+    "timestamp",
+    "previousHash",
+    "newHash",
+    "recordHash",
+    "previousRecordHash"
+  ],
+  "changeTypes": [
+    "MAINTENANCE",
+    "VERSION_UPDATE",
+    "ACTIVATION",
+    "ARCHIVE",
+    "ROLLBACK",
+    "RETIREMENT",
+    "INVALIDATION",
+    "CORRECTION"
+  ],
+  "correctionPolicy": {
+    "inPlaceEditAllowed": false,
+    "newCorrectionRecordRequired": true,
+    "originalChangeIdReferenceRequired": true
+  },
+  "validationRules": {
+    "uniqueChangeId": true,
+    "hashChainRequired": true,
+    "timestampOrderRequired": true,
+    "requestReferenceRequired": true,
+    "approvalReferenceRequired": true,
+    "failureResult": "BLOCKED_CHANGE_HISTORY_INVALID"
+  },
+  "recordsCreated": 0
+}
