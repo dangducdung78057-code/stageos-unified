@@ -1,0 +1,31 @@
+{
+  "validationId": "G22-BUILD-VALIDATION-v1.0",
+  "cases": [
+    { "id": "G22-VAL-001", "case": "MISSING_AUTHORIZATION", "expected": "BLOCKED_AUTHORIZATION_INCOMPLETE", "result": "PASS" },
+    { "id": "G22-VAL-002", "case": "SCOPE_MISMATCH", "expected": "BLOCKED_AUTHORIZATION_SCOPE_MISMATCH", "result": "PASS" },
+    { "id": "G22-VAL-003", "case": "HASH_MISMATCH", "expected": "BLOCKED_HASH_MISMATCH", "result": "PASS" },
+    { "id": "G22-VAL-004", "case": "VERSION_LOCK_FAILURE", "expected": "BLOCKED_VERSION_LOCK_FAILURE", "result": "PASS" },
+    { "id": "G22-VAL-005", "case": "BATCH_REQUEST", "expected": "BLOCKED", "result": "PASS" },
+    { "id": "G22-VAL-006", "case": "TEAM_EXPANSION_REQUEST", "expected": "BLOCKED", "result": "PASS" },
+    { "id": "G22-VAL-007", "case": "PROCUREMENT_REQUEST", "expected": "BLOCKED", "result": "PASS" },
+    { "id": "G22-VAL-008", "case": "OVERWRITE_V1_0", "expected": "BLOCKED_ORIGINAL_VERSION_OVERWRITE", "result": "PASS" },
+    { "id": "G22-VAL-009", "case": "INCOMPLETE_AUDIT", "expected": "BLOCKED_AUDIT_INCOMPLETE", "result": "PASS" },
+    { "id": "G22-VAL-010", "case": "POST_VALIDATION_PASS_WITHOUT_HUMAN_ACCEPTANCE", "expected": "PASS_PENDING_HUMAN_ACCEPTANCE", "result": "PASS" },
+    { "id": "G22-VAL-011", "case": "GATE21_ALLOWED_WITH_VALID_MAINTENANCE_CONDITIONS", "expected": "ELIGIBLE_FOR_AUTHORIZATION_REVIEW", "result": "PASS" },
+    { "id": "G22-VAL-012", "case": "GATE21_REVIEW_REQUIRED_WITHOUT_HUMAN_REVIEW", "expected": "BLOCKED", "result": "PASS" },
+    { "id": "G22-VAL-013", "case": "GATE21_NEW_GATE_REQUIRED", "expected": "BLOCKED_NEW_GATE_REQUIRED", "result": "PASS" },
+    { "id": "G22-VAL-014", "case": "CHAT_STATE_AS_AUTHORIZATION", "expected": "BLOCKED", "result": "PASS" },
+    { "id": "G22-VAL-015", "case": "SECOND_PRODUCTION_ASSET", "expected": "BLOCKED", "result": "PASS" },
+    { "id": "G22-VAL-016", "case": "AUTHORIZATION_REUSE", "expected": "BLOCKED_AUTHORIZATION_REUSED", "result": "PASS" },
+    { "id": "G22-VAL-017", "case": "BLUEPRINT_CHANGE", "expected": "BLOCKED_BLUEPRINT_CHANGE", "result": "PASS" },
+    { "id": "G22-VAL-018", "case": "EXECUTION_LIMIT_EXCEEDED", "expected": "BLOCKED", "result": "PASS" }
+  ],
+  "passCount": 18,
+  "failCount": 0,
+  "overallResult": "PASS_GATE_22_BUILD_VALIDATION",
+  "expansionRequestsExecuted": 0,
+  "assetsCreated": 0,
+  "batch": false,
+  "teamExpansion": false,
+  "procurementRelease": false
+}

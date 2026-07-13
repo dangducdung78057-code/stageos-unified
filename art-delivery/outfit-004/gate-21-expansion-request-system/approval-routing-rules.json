@@ -1,0 +1,34 @@
+{
+  "routingId": "G21-APPROVAL-ROUTING-v1.0",
+  "routes": {
+    "MAINTENANCE_REQUEST": {
+      "decision": "ALLOWED",
+      "route": "AUTO_VALIDATION",
+      "automaticExecution": false,
+      "requiredChecks": ["NO_CONTENT_CHANGE", "NO_NEW_HASH", "NO_VERSION_LOCK_IMPACT"]
+    },
+    "VERSION_UPDATE_REQUEST": {
+      "decision": "REVIEW_REQUIRED",
+      "route": "HUMAN_REVIEW",
+      "automaticVersionCreation": false,
+      "requiredOutputs": ["REVIEWER_REFERENCE", "APPROVAL_DECISION", "APPROVAL_TIMESTAMP", "APPROVED_CHANGE_SCOPE"]
+    },
+    "ASSET_EXPANSION_REQUEST": {
+      "decision": "NEW_GATE_REQUIRED",
+      "route": "NEW_GATE_PROPOSAL",
+      "automaticGateOrAssetCreation": false,
+      "requiredOutputs": ["IMPACT_ASSESSMENT", "NEW_GATE_REFERENCE", "HUMAN_GATE_AUTHORIZATION"]
+    },
+    "PRODUCTION_SCALE_REQUEST": {
+      "decision": "BLOCKED",
+      "route": "EXECUTIVE_REVIEW_AND_NEW_GATE",
+      "automaticScaleExecution": false,
+      "requiredOutputs": ["EXECUTIVE_APPROVAL", "NEW_GATE_REFERENCE", "INDEPENDENT_GATE_AUTHORIZATION"]
+    }
+  },
+  "approvalCannotBeInferredFromChat": true,
+  "existingProductionAcceptanceDoesNotAuthorizeExpansion": true,
+  "batch": false,
+  "teamExpansion": false,
+  "procurementRelease": false
+}

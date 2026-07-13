@@ -1,0 +1,47 @@
+{
+  "gateId": "GATE-21",
+  "gateStatus": "BUILD_COMPLETED",
+  "system": "EXPANSION_REQUEST_SYSTEM",
+  "baselineAsset": {
+    "productionAssetId": "G19-PROD-ASSET-001",
+    "productionVersion": "v1.0",
+    "status": "PRODUCTION_ASSET_ACCEPTED",
+    "productionHash": "17d33f862e3486fd4ff225262e8f85ef856597f3ad97a793fa9a4d3320e3ba36"
+  },
+  "scope": {
+    "requestClassification": true,
+    "decisionRouting": true,
+    "auditValidation": true,
+    "requestExecutionAuthorized": false
+  },
+  "allowedActions": [
+    "VALIDATE_REQUEST_INPUT",
+    "CLASSIFY_REQUEST",
+    "ROUTE_FOR_APPROVAL",
+    "APPEND_AUDIT_DECISION"
+  ],
+  "forbiddenActions": [
+    "EXECUTE_EXPANSION_REQUEST",
+    "CREATE_SECOND_PRODUCTION_ASSET",
+    "BATCH_PRODUCTION",
+    "TEAM_EXPANSION",
+    "PROCUREMENT_RELEASE",
+    "MODIFY_G19_PROD_ASSET_001_V1_0",
+    "MODIFY_GATE_01_THROUGH_20"
+  ],
+  "files": [
+    "GATE-21-MANIFEST.json",
+    "expansion-request-schema.json",
+    "request-classification-rules.json",
+    "decision-engine-rules.json",
+    "approval-routing-rules.json",
+    "audit-contract.json",
+    "validation-cases.json",
+    "GATE-21-REPORT.md"
+  ],
+  "requestsExecuted": 0,
+  "secondProductionAssetCreated": false,
+  "batch": false,
+  "teamExpansion": false,
+  "procurementRelease": false
+}

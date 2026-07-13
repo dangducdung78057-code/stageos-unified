@@ -1,0 +1,29 @@
+{
+  "validationId": "G21-BUILD-VALIDATION-v1.0",
+  "allowedResults": ["PASS", "BLOCKED"],
+  "cases": [
+    { "id": "G21-VAL-001", "scenario": "Maintenance request classification", "expectedDecision": "ALLOWED", "result": "PASS" },
+    { "id": "G21-VAL-002", "scenario": "Version update request classification", "expectedDecision": "REVIEW_REQUIRED", "result": "PASS" },
+    { "id": "G21-VAL-003", "scenario": "Asset expansion request classification", "expectedDecision": "NEW_GATE_REQUIRED", "result": "PASS" },
+    { "id": "G21-VAL-004", "scenario": "Production scale request classification", "expectedDecision": "BLOCKED", "result": "PASS" },
+    { "id": "G21-VAL-005", "scenario": "Mixed request applies strictest priority", "expectedDecision": "BLOCKED", "result": "PASS" },
+    { "id": "G21-VAL-006", "scenario": "Missing required field", "expectedDecision": "BLOCKED", "result": "PASS" },
+    { "id": "G21-VAL-007", "scenario": "Target asset mismatch", "expectedDecision": "BLOCKED", "result": "PASS" },
+    { "id": "G21-VAL-008", "scenario": "Target hash mismatch", "expectedDecision": "BLOCKED", "result": "PASS" },
+    { "id": "G21-VAL-009", "scenario": "Gate bypass attempt", "expectedDecision": "BLOCKED", "result": "PASS" },
+    { "id": "G21-VAL-010", "scenario": "Chat state used as authorization", "expectedDecision": "BLOCKED", "result": "PASS" },
+    { "id": "G21-VAL-011", "scenario": "Incomplete audit record", "expectedDecision": "BLOCKED", "result": "PASS" },
+    { "id": "G21-VAL-012", "scenario": "Missing human approval", "expectedDecision": "BLOCKED", "result": "PASS" },
+    { "id": "G21-VAL-013", "scenario": "Baseline v1.0 overwrite attempt", "expectedDecision": "BLOCKED", "result": "PASS" },
+    { "id": "G21-VAL-014", "scenario": "Decision output does not execute request", "expectedDecision": "ALLOWED", "result": "PASS" },
+    { "id": "G21-VAL-015", "scenario": "Frozen Gate-01 through Gate-20 remain unchanged", "expectedDecision": "ALLOWED", "result": "PASS" }
+  ],
+  "passCount": 15,
+  "failCount": 0,
+  "blockedCount": 0,
+  "overallResult": "PASS_GATE_21_BUILD_VALIDATION",
+  "requestsExecuted": 0,
+  "batch": false,
+  "teamExpansion": false,
+  "procurementRelease": false
+}

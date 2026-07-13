@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "stageos://gate-21/expansion-request-schema",
+  "title": "StageOS Expansion Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "requestType",
+    "requesterReference",
+    "targetAssetId",
+    "targetHash",
+    "requestedChange",
+    "reason",
+    "scope",
+    "riskLevel",
+    "relatedGate",
+    "approvalRequirement",
+    "evidenceReferences"
+  ],
+  "properties": {
+    "requestId": { "type": "string", "minLength": 1 },
+    "requestType": {
+      "enum": ["MAINTENANCE_REQUEST", "VERSION_UPDATE_REQUEST", "ASSET_EXPANSION_REQUEST", "PRODUCTION_SCALE_REQUEST"]
+    },
+    "requesterReference": { "type": "string", "minLength": 1 },
+    "targetAssetId": { "const": "G19-PROD-ASSET-001" },
+    "targetHash": { "const": "17d33f862e3486fd4ff225262e8f85ef856597f3ad97a793fa9a4d3320e3ba36" },
+    "requestedChange": { "type": "string", "minLength": 1 },
+    "reason": { "type": "string", "minLength": 1 },
+    "scope": {
+      "type": "object",
+      "required": ["project", "program", "characterUnit", "assetCount"],
+      "properties": {
+        "project": { "const": "outfit-004" },
+        "program": { "const": "Primary Dance Version" },
+        "characterUnit": { "const": "Teen Girl Center" },
+        "assetCount": { "const": 1 }
+      }
+    },
+    "riskLevel": { "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"] },
+    "relatedGate": { "type": "string", "minLength": 1 },
+    "approvalRequirement": { "type": "string", "minLength": 1 },
+    "evidenceReferences": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+  },
+  "executionAuthorized": false,
+  "invalidInputDecision": "BLOCKED"
+}

@@ -1,0 +1,50 @@
+{
+  "rulesId": "G23-AUDIT-ARCHIVE-v1.0",
+  "retention": "PERMANENT",
+  "requiredArchives": [
+    "ASSET_HISTORY",
+    "VERSION_HISTORY",
+    "APPROVAL_HISTORY",
+    "CHANGE_HISTORY",
+    "VALIDATION_RECORDS"
+  ],
+  "additionalArchives": [
+    "STATE_TRANSITION_HISTORY",
+    "ROLLBACK_HISTORY",
+    "RETIREMENT_HISTORY",
+    "REQUEST_RECORDS",
+    "EXECUTION_AUTHORIZATION_RECORDS",
+    "FILE_HASH_INDEX",
+    "EVIDENCE_REFERENCE_INDEX"
+  ],
+  "storagePolicy": {
+    "writeMode": "APPEND_ONLY",
+    "deleteAllowed": false,
+    "overwriteAllowed": false,
+    "inPlaceEditAllowed": false,
+    "historicalVersionsReadOnly": true,
+    "recordHashRequired": true,
+    "previousRecordHashRequired": true,
+    "timestampFormat": "UTC_ISO_8601"
+  },
+  "traceabilityRequirements": [
+    "ASSET_TO_ALL_VERSIONS",
+    "VERSION_TO_FILE_HASH_REQUEST_APPROVAL",
+    "CHANGE_TO_PREVIOUS_AND_NEW_VERSION",
+    "APPROVAL_TO_REVIEWER_AND_TIMESTAMP",
+    "ROLLBACK_TO_SOURCE_AND_TARGET_VERSION",
+    "RETIREMENT_TO_FINAL_VERSION_AND_HASH",
+    "VALIDATION_TO_EXECUTION_OR_TRANSITION"
+  ],
+  "failureConditions": [
+    "HISTORY_CHAIN_BREAK",
+    "HASH_MISMATCH",
+    "UNRESOLVED_APPROVAL",
+    "RECORD_OVERWRITE_OR_DELETE",
+    "VERSION_WITHOUT_FILE_REFERENCE",
+    "CHANGE_WITHOUT_REQUEST_ID",
+    "VALIDATION_WITHOUT_DECISION"
+  ],
+  "failureResult": "BLOCKED_AUDIT_ARCHIVE_INCOMPLETE",
+  "archiveOperationsExecuted": 0
+}

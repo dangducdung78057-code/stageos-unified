@@ -1,0 +1,49 @@
+{
+  "checklistId": "G22-EXECUTION-PREPARATION-CHECKLIST-v1.0",
+  "baselineAssetId": "G19-PROD-ASSET-001",
+  "baselineVersion": "v1.0",
+  "baselineHash": "17d33f862e3486fd4ff225262e8f85ef856597f3ad97a793fa9a4d3320e3ba36",
+  "checks": {
+    "assetId": {
+      "requirement": "TARGET_ASSET_EQUALS_BASELINE",
+      "failureResult": "BLOCKED_BASELINE_MISMATCH"
+    },
+    "versionLock": {
+      "requiredLocks": ["PRODUCTION_ASSET_VERSION", "BLUEPRINT_VERSION", "MATERIAL_DNA_VERSION", "PALETTE_VERSION", "CLOUD_COLLAR_VERSION", "CHARACTER_UNIT_VERSION"],
+      "requiredStatus": "LOCKED",
+      "failureResult": "BLOCKED_VERSION_LOCK_FAILURE"
+    },
+    "hash": {
+      "requirement": "TARGET_HASH_EQUALS_BASELINE_HASH",
+      "failureResult": "BLOCKED_HASH_MISMATCH"
+    },
+    "blueprint": {
+      "requirement": "BLUEPRINT_UNCHANGED_AND_LOCKED",
+      "failureResult": "BLOCKED_BLUEPRINT_CHANGE"
+    },
+    "materialDNA": {
+      "requirement": "MATERIAL_DNA_UNCHANGED_AND_LOCKED",
+      "failureResult": "BLOCKED_MATERIAL_DNA_DRIFT"
+    },
+    "palette": {
+      "requirement": "PALETTE_UNCHANGED_AND_LOCKED",
+      "failureResult": "BLOCKED_PALETTE_DRIFT"
+    },
+    "cloudCollar": {
+      "requirement": "CLOUD_COLLAR_UNCHANGED_AND_LOCKED",
+      "failureResult": "BLOCKED_CLOUD_COLLAR_DRIFT"
+    },
+    "characterUnit": {
+      "requirement": "TEEN_GIRL_CENTER_UNCHANGED_AND_LOCKED",
+      "failureResult": "BLOCKED_CHARACTER_UNIT_DRIFT"
+    },
+    "scope": {
+      "requirement": "REQUEST_AUTHORIZATION_AND_EXECUTION_SCOPE_IDENTICAL",
+      "failureResult": "BLOCKED_SCOPE_MISMATCH"
+    }
+  },
+  "allChecksMustPass": true,
+  "allowedResults": ["READY_FOR_EXECUTION", "BLOCKED"],
+  "currentResult": "NOT_EVALUATED_NO_EXECUTION_REQUEST",
+  "executionStarted": false
+}

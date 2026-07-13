@@ -1,0 +1,49 @@
+{
+  "gateId": "GATE-22",
+  "gateStatus": "BUILD_COMPLETED",
+  "system": "EXPANSION_EXECUTION_GOVERNANCE",
+  "baselineAsset": {
+    "productionAssetId": "G19-PROD-ASSET-001",
+    "productionVersion": "v1.0",
+    "status": "PRODUCTION_ASSET_ACCEPTED",
+    "productionHash": "17d33f862e3486fd4ff225262e8f85ef856597f3ad97a793fa9a4d3320e3ba36"
+  },
+  "upstream": {
+    "gate21Status": "BUILD_COMPLETED",
+    "gate21Manifest": "../gate-21-expansion-request-system/GATE-21-MANIFEST.json"
+  },
+  "governanceScope": {
+    "authorizationValidation": true,
+    "executionPreparationValidation": true,
+    "postExecutionValidation": true,
+    "humanAcceptanceRouting": true,
+    "requestExecutionAuthorized": false
+  },
+  "forbiddenActions": [
+    "EXECUTE_EXPANSION_REQUEST",
+    "CREATE_ASSET",
+    "CREATE_SECOND_PRODUCTION_ASSET",
+    "BATCH_PRODUCTION",
+    "TEAM_EXPANSION",
+    "PROCUREMENT_RELEASE",
+    "MODIFY_G19_PROD_ASSET_001_V1_0",
+    "MODIFY_GATE_01_THROUGH_21",
+    "USE_CHAT_STATE_AS_AUTHORIZATION",
+    "INFER_NEW_PERMISSION_FROM_OLD_APPROVAL"
+  ],
+  "files": [
+    "GATE-22-MANIFEST.json",
+    "execution-boundary-rules.json",
+    "execution-authorization-contract.json",
+    "execution-preparation-checklist.json",
+    "post-execution-validation-rules.json",
+    "validation-cases.json",
+    "GATE-22-REPORT.md"
+  ],
+  "expansionRequestsExecuted": 0,
+  "assetsCreated": 0,
+  "secondProductionAssetCreated": false,
+  "batch": false,
+  "teamExpansion": false,
+  "procurementRelease": false
+}

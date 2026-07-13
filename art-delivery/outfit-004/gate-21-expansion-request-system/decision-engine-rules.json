@@ -1,0 +1,49 @@
+{
+  "engineId": "G21-DECISION-ENGINE-v1.0",
+  "processingFlow": [
+    "INPUT_VALIDATION",
+    "BASELINE_VALIDATION",
+    "IMPACT_ANALYSIS",
+    "RULE_MATCHING",
+    "DECISION_OUTPUT",
+    "AUDIT_APPEND"
+  ],
+  "allowedOutputs": ["ALLOWED", "REVIEW_REQUIRED", "NEW_GATE_REQUIRED", "BLOCKED"],
+  "inputValidation": {
+    "schemaReference": "expansion-request-schema.json",
+    "missingFieldResult": "BLOCKED",
+    "missingEvidenceResult": "BLOCKED"
+  },
+  "baselineValidation": {
+    "targetAssetId": "G19-PROD-ASSET-001",
+    "targetVersion": "v1.0",
+    "targetHash": "17d33f862e3486fd4ff225262e8f85ef856597f3ad97a793fa9a4d3320e3ba36",
+    "mismatchResult": "BLOCKED"
+  },
+  "impactAnalysis": {
+    "detectContentChange": true,
+    "detectVersionLockImpact": true,
+    "detectAssetExpansion": true,
+    "detectProductionScale": true
+  },
+  "ruleMatching": {
+    "rulesReference": "request-classification-rules.json",
+    "strictestRuleWins": true,
+    "ambiguousResult": "BLOCKED"
+  },
+  "failClosedConditions": [
+    "MISSING_REQUIRED_FIELD",
+    "BASELINE_ASSET_MISMATCH",
+    "BASELINE_HASH_MISMATCH",
+    "AMBIGUOUS_IMPACT",
+    "REQUEST_TYPE_IMPACT_CONFLICT",
+    "MISSING_EVIDENCE",
+    "OVERWRITE_V1_0_ATTEMPT",
+    "GATE_BYPASS_ATTEMPT",
+    "CHAT_STATE_AUTHORIZATION_ATTEMPT",
+    "MISSING_REQUIRED_APPROVAL",
+    "INCOMPLETE_AUDIT"
+  ],
+  "decisionIsExecutionAuthorization": false,
+  "automaticExecution": false
+}

@@ -1,0 +1,45 @@
+{
+  "contractId": "G22-EXECUTION-AUTHORIZATION-CONTRACT-v1.0",
+  "requiredFields": [
+    "executionRequestId",
+    "sourceRequestId",
+    "decisionResult",
+    "targetAssetId",
+    "targetVersion",
+    "targetHash",
+    "approvedScope",
+    "executorReference",
+    "approvalReference",
+    "approvalTimestamp",
+    "executionLimit",
+    "singleUse"
+  ],
+  "fieldConstraints": {
+    "executionRequestId": { "type": "string", "unique": true, "reusable": false },
+    "sourceRequestId": { "type": "string", "mustResolveToGate21Request": true },
+    "decisionResult": { "enum": ["ALLOWED", "REVIEW_REQUIRED"] },
+    "targetAssetId": { "const": "G19-PROD-ASSET-001" },
+    "targetVersion": { "type": "string", "nonEmpty": true },
+    "targetHash": { "const": "17d33f862e3486fd4ff225262e8f85ef856597f3ad97a793fa9a4d3320e3ba36" },
+    "approvedScope": { "type": "object", "additionalScopeAllowed": false },
+    "executorReference": { "type": "string", "nonEmpty": true },
+    "approvalReference": { "type": "string", "mustResolve": true },
+    "approvalTimestamp": { "type": "string", "format": "date-time", "timezone": "UTC" },
+    "executionLimit": { "type": "integer", "minimum": 1, "maximum": 1 },
+    "singleUse": { "const": true }
+  },
+  "authorizationRules": {
+    "scopeMustEqualApprovedRequestScope": true,
+    "approvalMustPrecedeExecution": true,
+    "authorizationReuseAllowed": false,
+    "automaticExecutionAllowed": false,
+    "chatStateAcceptedAsAuthorization": false,
+    "oldApprovalCanGrantNewPermission": false
+  },
+  "missingFieldResult": "BLOCKED_AUTHORIZATION_INCOMPLETE",
+  "scopeMismatchResult": "BLOCKED_AUTHORIZATION_SCOPE_MISMATCH",
+  "reuseResult": "BLOCKED_AUTHORIZATION_REUSED",
+  "baselineMismatchResult": "BLOCKED_BASELINE_MISMATCH",
+  "executionInstances": 0,
+  "executionAuthorized": false
+}

@@ -1,0 +1,54 @@
+{
+  "rulesId": "G22-EXECUTION-BOUNDARY-v1.0",
+  "gate21DecisionMapping": {
+    "ALLOWED": {
+      "eligibleExecutionType": "MAINTENANCE",
+      "conditions": [
+        "AUTO_VALIDATION_PASS",
+        "NO_CONTENT_CHANGE",
+        "NO_VERSION_LOCK_CHANGE",
+        "VALID_GATE_22_AUTHORIZATION"
+      ],
+      "result": "ELIGIBLE_FOR_AUTHORIZATION_REVIEW"
+    },
+    "REVIEW_REQUIRED": {
+      "eligibleExecutionType": "VERSION_UPDATE",
+      "conditions": [
+        "HUMAN_REVIEW_PASS",
+        "NEW_VERSION_REQUIRED",
+        "NEW_HASH_REQUIRED",
+        "NEW_REVIEW_REQUIRED",
+        "VALID_GATE_22_AUTHORIZATION"
+      ],
+      "result": "ELIGIBLE_FOR_AUTHORIZATION_REVIEW"
+    },
+    "NEW_GATE_REQUIRED": {
+      "conditions": [],
+      "result": "BLOCKED_NEW_GATE_REQUIRED"
+    },
+    "BLOCKED": {
+      "conditions": [],
+      "result": "BLOCKED"
+    }
+  },
+  "allowedExecutionTypes": ["APPROVED_MAINTENANCE", "APPROVED_VERSION_UPDATE"],
+  "directBlockConditions": [
+    "MISSING_GATE_21_REQUEST",
+    "MISSING_EXECUTION_AUTHORIZATION",
+    "CHAT_STATE_AUTHORIZATION_ATTEMPT",
+    "OLD_APPROVAL_PERMISSION_INFERENCE",
+    "SECOND_PRODUCTION_ASSET",
+    "BATCH_PRODUCTION",
+    "TEAM_EXPANSION",
+    "PROCUREMENT_RELEASE",
+    "BLUEPRINT_CHANGE",
+    "SCOPE_EXPANSION",
+    "OVERWRITE_V1_0"
+  ],
+  "strictestRuleWins": true,
+  "defaultResult": "BLOCKED",
+  "executionAuthorizedByThisRuleSet": false,
+  "batch": false,
+  "teamExpansion": false,
+  "procurementRelease": false
+}

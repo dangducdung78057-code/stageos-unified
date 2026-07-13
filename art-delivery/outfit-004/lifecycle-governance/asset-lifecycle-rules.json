@@ -1,0 +1,42 @@
+{
+  "rulesId": "G23-ASSET-LIFECYCLE-v1.0",
+  "baselineState": "PRODUCTION_ASSET_ACCEPTED",
+  "normalStateFlow": [
+    "PRODUCTION_ASSET_ACCEPTED",
+    "ACTIVE",
+    "VERSION_UPDATE_PENDING",
+    "VERSION_ACTIVE",
+    "ARCHIVED",
+    "RETIRED"
+  ],
+  "exceptionStates": ["BLOCKED", "INVALIDATED"],
+  "transitionRequiredFields": [
+    "transitionId",
+    "assetId",
+    "fromState",
+    "toState",
+    "trigger",
+    "evidenceReferences",
+    "approvalReference",
+    "reviewerReference",
+    "timestamp",
+    "assetVersion",
+    "assetHash",
+    "transitionDecision"
+  ],
+  "transitionRules": {
+    "sequentialOnly": true,
+    "skipAllowed": false,
+    "approvalRequired": true,
+    "evidenceRequired": true,
+    "timestampFormat": "UTC_ISO_8601",
+    "failureResult": "BLOCKED_TRANSITION_INCOMPLETE"
+  },
+  "invalidationRules": {
+    "automaticInvalidationAllowed": false,
+    "required": ["reason", "evidenceReferences", "humanApprovalReference", "timestamp"]
+  },
+  "currentState": "PRODUCTION_ASSET_ACCEPTED",
+  "transitionsExecuted": 0,
+  "assetActivated": false
+}
