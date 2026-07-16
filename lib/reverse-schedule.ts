@@ -5,6 +5,9 @@ function isoDate(date: Date): string {
 }
 
 function due(performanceDate: string, daysBefore: number): string {
+  // performanceDate is always YYYY-MM-DD (from a <input type="date">);
+  // appending T12:00:00 keeps the calculation in local noon to avoid
+  // DST boundary shifts when setDate rolls back across midnight.
   const date = new Date(`${performanceDate}T12:00:00`)
   date.setDate(date.getDate() - daysBefore)
   return isoDate(date)
@@ -67,6 +70,10 @@ export function buildReverseSchedule(
   tier: MembershipTier,
 ): ScheduleTask[] {
   const seeds = tier === 'free' ? CORE_TASKS : [...CORE_TASKS, ...MEMBER_TASKS]
+  // Rehearsal buffer: give groups extra lead time when rehearsal frequency
+  // is low (< 3 sessions/week → +5 days) or the cast is very large
+  // (> 60 performers → +3 days). Both factors increase coordination risk
+  // for rehearsal and blocking tasks.
   const rehearsalBuffer =
     input.rehearsalFrequencyPerWeek < 3
       ? 5
@@ -92,7 +99,7 @@ export function buildReverseSchedule(
     .sort((a, b) => b.daysBefore - a.daysBefore)
 }
 
-export const CATEGORY_COLORS: Record<string, string> = {
+export const CATEGORY_COLORS: Record<ScheduleCategory, string> = {
   策划: 'bg-purple-100 text-purple-800',
   方案: 'bg-blue-100 text-blue-800',
   队形: 'bg-cyan-100 text-cyan-800',

@@ -260,7 +260,7 @@ function ScheduleView({
                   </td>
                   <td className="hidden px-4 py-3 sm:table-cell">
                     <span
-                      className={`inline-block rounded px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[task.category] ?? 'bg-muted text-muted-foreground'}`}
+                      className={`inline-block rounded px-2 py-0.5 text-xs font-medium ${CATEGORY_COLORS[task.category]}`}
                     >
                       {task.category}
                     </span>
