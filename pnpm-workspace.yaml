@@ -1,3 +1,6 @@
+# Explicitly suppress install-time build scripts for these packages.
+# pnpm v11 requires packages with postinstall/build scripts to be listed here;
+# setting to false acknowledges them without running scripts.
 allowBuilds:
   msw: false
   sharp: false
