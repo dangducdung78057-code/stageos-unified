@@ -10,6 +10,11 @@ const nextConfig = {
         destination: '/icon.svg',
         permanent: true,
       },
+      {
+        source: '/favicon.png',
+        destination: '/icon.svg',
+        permanent: true,
+      },
     ]
   },
 }
