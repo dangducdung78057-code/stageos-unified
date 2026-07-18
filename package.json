@@ -36,9 +36,5 @@
   "engines": {
     "node": "^20.19.0 || ^22.13.0 || >=24"
   },
-  "pnpm": {
-    "overrides": {
-      "hono": "4.12.25"
-    }
-  }
+  "packageManager": "pnpm@11.5.2"
 }
