@@ -9,7 +9,7 @@
     "stageos": {
       "routing": [
         {
-          "paths": "/docs/:path*", "/prefix/*/https://vercel.com/lv20/master/settings*
+          "paths": "/docs/:path*"
         }
       ]
     }
