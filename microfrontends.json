@@ -9,10 +9,9 @@
     "stageos": {
       "routing": [
         {
-          "paths": ["/docs/:path*", "/https://vercel.com/lv20/master/settings"]
-        }]
+          "paths": [/https://vercel.com/lv20/master/settings */]
         }
-      
+      ]
     }
   }
-
+}
