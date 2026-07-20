@@ -1,11 +1,23 @@
 import { Analytics } from '@vercel/analytics/next'
-import { SpeedInsights } from '@vercel/speed-insights/next'
 import type { Metadata, Viewport } from 'next'
+import { Geist, Geist_Mono, Noto_Serif_SC } from 'next/font/google'
 import './globals.css'
 
+const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] })
+const geistMono = Geist_Mono({
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+})
+const notoSerif = Noto_Serif_SC({
+  variable: '--font-serif-sc',
+  weight: ['400', '600', '700'],
+  subsets: ['latin'],
+})
+
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title: '艺演助手 · 让每位孩子的舞台，都被认真对待',
+  description:
+    '面向群众型表演与市级半专业团队的舞台视觉结构设计系统。输入环境、人数与主题，自动生成配色、队形、服装与避坑方案。',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -27,11 +39,8 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'light dark',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
-  ],
+  colorScheme: 'light',
+  themeColor: '#f3f0e4',
 }
 
 export default function RootLayout({
@@ -40,11 +49,13 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className="antialiased">
+    <html
+      lang="zh-CN"
+      className={`${geistSans.variable} ${geistMono.variable} ${notoSerif.variable}`}
+    >
+      <body className="bg-background font-sans antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
-        <SpeedInsights />
       </body>
     </html>
   )
