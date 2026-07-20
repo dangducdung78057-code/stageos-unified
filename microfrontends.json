@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/microfrontends.json",
+  "applications": {
+    "master": {
+      "development": {
+        "fallback": "master-tawny-pi.vercel.app"
+      }
+    },
+    "stageos": {
+      "routing": [
+        {
+          "paths": [/* add paths here */]
+        }
+      ]
+    }
+  }
+}
