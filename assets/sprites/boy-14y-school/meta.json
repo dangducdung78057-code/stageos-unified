@@ -1,0 +1,44 @@
+{
+  "id": "boy-14y-school",
+  "name": "初二男生·白色基础款",
+  "license": "self-produced",
+  "priceTier": "free",
+  "files": [
+    "boy-14y-school_front_0.png",
+    "boy-14y-school_front_left_0.png",
+    "boy-14y-school_front_right_0.png"
+  ],
+  "sourceFiles": [
+    "boy-14y-school_front_raw.png",
+    "boy-14y-school_front_left_raw.png",
+    "boy-14y-school_front_right_raw.png"
+  ],
+  "style": "realistic-teen",
+  "headRatio": 7.0,
+  "headRatioMeasured": {
+    "front": 7.46,
+    "front_left": 7.19,
+    "front_right": 7.26
+  },
+  "ageRange": "13-15",
+  "directions": [
+    "front",
+    "front_left",
+    "front_right"
+  ],
+  "slots": [
+    "body"
+  ],
+  "slotsNote": "v1批次服装与身体合并为body整件（全白底，支持运行时tint重着色）；top/bottom/shoes独立槽位拆分列入后续迭代",
+  "frames": {
+    "idle": 1
+  },
+  "canvas": "128x192",
+  "anchor": "feet-bottom-center (0.5, 1.0)",
+  "source": "ai-generated+human-verified",
+  "batchId": "batch-2026-07-foundation",
+  "createdAt": "2026-07-22",
+  "version": 1,
+  "updatedAt": "2026-07-22",
+  "revisionNote": "v2任务2：14岁组头身比补偿重出，三视角≥6.9、极差0.27≤0.35"
+}
