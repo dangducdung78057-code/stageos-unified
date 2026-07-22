@@ -5,7 +5,9 @@
   1. 文件为 PNG 且含透明通道，且确实存在透明像素
   2. 画布尺寸符合规范集合（默认 128x192，可用 --sizes 覆盖）
   3. 锚点合规：角色最底部非透明像素的水平中心与画布中心偏差 ≤ --anchor-tol（默认 8px）
-  4. 文件命名合规：{slot}/{id}_{direction}_{frame}.png
+  4. 文件命名合规，两种布局均接受：
+     a) 槽位前缀式 {slot}/{id}_{direction}_{frame}.png（拆分槽位后的目标结构）
+     b) 扁平式 {id}_{direction}_{frame}.png（v1 批次 body 整件合并，slot 视为 body）
      slot      ∈ body|head|top|bottom|shoes|accessory
      direction ∈ front|back|left|right|front_left|front_right|back_left|back_right
      frame     ≥ 0 的整数
@@ -29,18 +31,26 @@ SLOTS = {"body", "head", "top", "bottom", "shoes", "accessory"}
 DIRECTIONS = {"front", "back", "left", "right",
               "front_left", "front_right", "back_left", "back_right"}
 NAME_RE = re.compile(r"^(?P<slot>[a-z]+)/(?P<id>[a-z0-9-]+)_(?P<direction>[a-z_]+)_(?P<frame>\d+)\.png$")
+FLAT_NAME_RE = re.compile(r"^(?P<id>[a-z0-9-]+)_(?P<direction>[a-z_]+)_(?P<frame>\d+)\.png$")
 
 
 def check_name(path: Path) -> dict:
     rel = path.parent.name + "/" + path.name
     m = NAME_RE.match(rel)
-    if not m:
-        return {"passed": False, "reason": f"命名应为 {{slot}}/{{id}}_{{direction}}_{{frame}}.png，实际 {rel}"}
-    if m.group("slot") not in SLOTS:
-        return {"passed": False, "reason": f"未知槽位 {m.group('slot')}"}
+    if m and m.group("slot") in SLOTS:
+        slot, layout = m.group("slot"), "slot-prefixed"
+    else:
+        m = FLAT_NAME_RE.match(path.name)
+        if m:
+            slot, layout = "body", "flat"  # 扁平结构：v1 批次整件合并，视为 body 槽
+        else:
+            bad_slot = m.group("slot") if m else None
+            reason = (f"未知槽位 {bad_slot}" if bad_slot else
+                      f"命名应为 {{slot}}/{{id}}_{{direction}}_{{frame}}.png 或扁平式 {{id}}_{{direction}}_{{frame}}.png，实际 {rel}")
+            return {"passed": False, "reason": reason}
     if m.group("direction") not in DIRECTIONS:
         return {"passed": False, "reason": f"未知方向 {m.group('direction')}"}
-    return {"passed": True, "slot": m.group("slot"), "direction": m.group("direction")}
+    return {"passed": True, "slot": slot, "direction": m.group("direction"), "layout": layout}
 
 
 def main() -> int:
