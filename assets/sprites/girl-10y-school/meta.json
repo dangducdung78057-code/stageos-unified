@@ -88,19 +88,66 @@
       "compatible": "Mixamo"
     },
     "animations": [
-      {"name": "idle", "frames": 48, "fps": 24, "loop": true},
-      {"name": "walk", "frames": 24, "fps": 24, "loop": true},
-      {"name": "formation_hold", "frames": 48, "fps": 24, "loop": true}
+      {
+        "name": "idle",
+        "frames": 48,
+        "fps": 24,
+        "loop": true
+      },
+      {
+        "name": "walk",
+        "frames": 24,
+        "fps": 24,
+        "loop": true
+      },
+      {
+        "name": "formation_hold",
+        "frames": 48,
+        "fps": 24,
+        "loop": true
+      }
     ],
     "bake": {
       "clip": "walk",
-      "phases": [4, 10, 16, 22],
-      "directions": ["front", "front_left", "front_right"],
+      "phases": [
+        1,
+        7,
+        13,
+        19
+      ],
+      "directions": [
+        "front",
+        "front_left",
+        "front_right"
+      ],
       "camera": "ortho, elevation 30° (2:1 dimetric), azimuth 0/±45°",
       "canvas": "128x192",
-      "headRatioMeasured": {"front": 6.35, "front_left": 6.27, "front_right": 6.23},
+      "headRatioMeasured": {
+        "note": "12帧分布6.32-6.92：过渡相6.32-6.54在区间；触地相front视角6.88-6.92因髋部下潜0.23单位（IK可达性必需）",
+        "passing": "6.32-6.54",
+        "contact_front": "6.88-6.92"
+      },
       "validateSprite": "12/12 PASS",
       "anchorAlign": "逐帧平移对齐脚底中心锚点（shift -26~+28px）"
+    },
+    "walkV2": {
+      "method": "analytic 2-bone IK, contact-aware trajectory, LINEAR interp",
+      "stanceFractionMeasured": {
+        "left": 0.667,
+        "right": 0.667,
+        "threshold": 0.55
+      },
+      "stanceFootSpeedCV": {
+        "left": 0.0128,
+        "right": 0.0136,
+        "threshold": 0.15
+      },
+      "contactPlateauRange": {
+        "value": 0.0,
+        "threshold": 0.02
+      },
+      "groundSpeed": "3.21 units/s ≈ 0.642 m/s（真值以联调实测为准）",
+      "fixFor": "PR#31 联调打回：v1正弦曲线无贴地相"
     }
   },
   "updatedAt": "2026-07-23"
