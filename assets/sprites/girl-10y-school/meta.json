@@ -1,0 +1,154 @@
+{
+  "id": "girl-10y-school",
+  "name": "四年级女生·白色基础款",
+  "license": "self-produced",
+  "priceTier": "free",
+  "files": [
+    "body/girl-10y-school_front_0.png",
+    "top/girl-10y-school_front_0.png",
+    "bottom/girl-10y-school_front_0.png",
+    "shoes/girl-10y-school_front_0.png",
+    "body/girl-10y-school_front_left_0.png",
+    "top/girl-10y-school_front_left_0.png",
+    "bottom/girl-10y-school_front_left_0.png",
+    "shoes/girl-10y-school_front_left_0.png",
+    "body/girl-10y-school_front_right_0.png",
+    "top/girl-10y-school_front_right_0.png",
+    "bottom/girl-10y-school_front_right_0.png",
+    "shoes/girl-10y-school_front_right_0.png",
+    "body/girl-10y-school-walk_front_0.png",
+    "body/girl-10y-school-walk_front_1.png",
+    "body/girl-10y-school-walk_front_2.png",
+    "body/girl-10y-school-walk_front_3.png",
+    "body/girl-10y-school-walk_front_left_0.png",
+    "body/girl-10y-school-walk_front_left_1.png",
+    "body/girl-10y-school-walk_front_left_2.png",
+    "body/girl-10y-school-walk_front_left_3.png",
+    "body/girl-10y-school-walk_front_right_0.png",
+    "body/girl-10y-school-walk_front_right_1.png",
+    "body/girl-10y-school-walk_front_right_2.png",
+    "body/girl-10y-school-walk_front_right_3.png",
+    "lowpoly/girl-10y-school.glb",
+    "lowpoly/girl-10y-school.blend"
+  ],
+  "sourceFiles": [
+    "girl-10y-school_front_raw10.png",
+    "girl-10y-school_front_left_raw2.png",
+    "girl-10y-school_front_right_raw.png"
+  ],
+  "style": "realistic-child",
+  "headRatio": 6.5,
+  "headRatioMeasured": {
+    "front": 6.45,
+    "front_left": 6.37,
+    "front_right": 6.23
+  },
+  "ageRange": "9-11",
+  "directions": [
+    "front",
+    "front_left",
+    "front_right"
+  ],
+  "slots": [
+    "body",
+    "top",
+    "bottom",
+    "shoes"
+  ],
+  "slotsNote": "v2任务1完成槽位拆分：同底图分层擦除，body=皮肤/头发+内衣白底(衣区原像素提亮)，叠合还原差 avg≤2.3、零像素>60",
+  "frames": {
+    "idle": 1,
+    "walk": 4
+  },
+  "canvas": "128x192",
+  "anchor": "feet-bottom-center (0.5, 1.0)",
+  "source": "ai-generated+human-verified",
+  "batchId": "batch-2026-07-foundation",
+  "createdAt": "2026-07-22",
+  "version": 3,
+  "layerOrder": [
+    "body",
+    "bottom",
+    "shoes",
+    "top"
+  ],
+  "lowpoly": {
+    "file": "lowpoly/girl-10y-school.glb",
+    "sourceBlend": "lowpoly/girl-10y-school.blend",
+    "format": "glTF 2.0 (GLB)",
+    "vertices": 468,
+    "quads": 432,
+    "triangles": 0,
+    "vertexBudget": 2800,
+    "allQuads": true,
+    "jointLoops": "每个关节两侧端部环形边+中部支撑环（肘/膝/腕/踝/肩/髋），重叠区50/50权重过渡",
+    "skeleton": {
+      "bones": 22,
+      "naming": "mixamorig:*",
+      "compatible": "Mixamo"
+    },
+    "animations": [
+      {
+        "name": "idle",
+        "frames": 48,
+        "fps": 24,
+        "loop": true
+      },
+      {
+        "name": "walk",
+        "frames": 24,
+        "fps": 24,
+        "loop": true
+      },
+      {
+        "name": "formation_hold",
+        "frames": 48,
+        "fps": 24,
+        "loop": true
+      }
+    ],
+    "bake": {
+      "clip": "walk",
+      "phases": [
+        1,
+        7,
+        13,
+        19
+      ],
+      "directions": [
+        "front",
+        "front_left",
+        "front_right"
+      ],
+      "camera": "ortho, elevation 30° (2:1 dimetric), azimuth 0/±45°",
+      "canvas": "128x192",
+      "headRatioMeasured": {
+        "note": "12帧分布6.32-6.92：过渡相6.32-6.54在区间；触地相front视角6.88-6.92因髋部下潜0.23单位（IK可达性必需）",
+        "passing": "6.32-6.54",
+        "contact_front": "6.88-6.92"
+      },
+      "validateSprite": "12/12 PASS",
+      "anchorAlign": "逐帧平移对齐脚底中心锚点（shift -26~+28px）"
+    },
+    "walkV2": {
+      "method": "analytic 2-bone IK, contact-aware trajectory, LINEAR interp",
+      "stanceFractionMeasured": {
+        "left": 0.667,
+        "right": 0.667,
+        "threshold": 0.55
+      },
+      "stanceFootSpeedCV": {
+        "left": 0.0128,
+        "right": 0.0136,
+        "threshold": 0.15
+      },
+      "contactPlateauRange": {
+        "value": 0.0,
+        "threshold": 0.02
+      },
+      "groundSpeed": "3.21 units/s ≈ 0.642 m/s（真值以联调实测为准）",
+      "fixFor": "PR#31 联调打回：v1正弦曲线无贴地相"
+    }
+  },
+  "updatedAt": "2026-07-23"
+}
