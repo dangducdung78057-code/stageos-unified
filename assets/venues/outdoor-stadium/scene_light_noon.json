@@ -1,0 +1,21 @@
+{
+  "venue": "outdoor-stadium",
+  "model": "sky",
+  "preset": "noon",
+  "computed": {
+    "preset_city": "nanchang",
+    "date": "2026-07-22",
+    "time": "12:30"
+  },
+  "key_tint": "#FFEDE3",
+  "kelvin": 5600,
+  "shadow": {
+    "azimuth": 20.62,
+    "factor": 0.158,
+    "vector_25d": {
+      "dx": 0.056,
+      "dy": -0.074
+    }
+  },
+  "note": "近顶光中性白，影缩脚下，以接触影为主"
+}
