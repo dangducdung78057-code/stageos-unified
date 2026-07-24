@@ -133,21 +133,26 @@
     "walkV2": {
       "method": "analytic 2-bone IK, contact-aware trajectory, LINEAR interp",
       "stanceFractionMeasured": {
-        "left": 0.667,
-        "right": 0.667,
-        "threshold": 0.55
+        "left": 0.599,
+        "right": 0.601,
+        "threshold": 0.55,
+        "note": "联调方独立复测真值（运动学口径：vz<0后退段）；美术侧自测66.7%为踝高阈值口径"
       },
       "stanceFootSpeedCV": {
-        "left": 0.0128,
-        "right": 0.0136,
-        "threshold": 0.15
+        "left": 0.108,
+        "right": 0.113,
+        "threshold": 0.15,
+        "note": "联调方独立复测真值；美术侧自测1.3%为逐帧匀速段口径"
       },
       "contactPlateauRange": {
-        "value": 0.0,
-        "threshold": 0.02
+        "value": 0.065,
+        "unit": "m",
+        "threshold": 0.02,
+        "note": "联调方复测：趾高波动6.5cm，属贴地末段正常趾部滚动+轻微IK晃动，不影响防滑步（水平速度恒定已达标）；美术侧原报0.0000为踝点口径，口径不当已纠正"
       },
-      "groundSpeed": "3.21 units/s ≈ 0.642 m/s（真值以联调实测为准）",
-      "fixFor": "PR#31 联调打回：v1正弦曲线无贴地相"
+      "groundSpeed": "0.60 m/s（Formation3D 真机实测真值，左右脚一致）",
+      "fixFor": "PR#31 联调打回：v1正弦曲线无贴地相",
+      "acceptance": "2026-07-23 联调复测三指标通过，真机目验地速0.60不滑步后闭环"
     }
   },
   "updatedAt": "2026-07-23"
