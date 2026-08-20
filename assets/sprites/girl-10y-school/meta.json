@@ -1,0 +1,61 @@
+{
+  "id": "girl-10y-school",
+  "name": "四年级女生·白色基础款",
+  "license": "self-produced",
+  "priceTier": "free",
+  "files": [
+    "body/girl-10y-school_front_0.png",
+    "top/girl-10y-school_front_0.png",
+    "bottom/girl-10y-school_front_0.png",
+    "shoes/girl-10y-school_front_0.png",
+    "body/girl-10y-school_front_left_0.png",
+    "top/girl-10y-school_front_left_0.png",
+    "bottom/girl-10y-school_front_left_0.png",
+    "shoes/girl-10y-school_front_left_0.png",
+    "body/girl-10y-school_front_right_0.png",
+    "top/girl-10y-school_front_right_0.png",
+    "bottom/girl-10y-school_front_right_0.png",
+    "shoes/girl-10y-school_front_right_0.png"
+  ],
+  "sourceFiles": [
+    "girl-10y-school_front_raw10.png",
+    "girl-10y-school_front_left_raw2.png",
+    "girl-10y-school_front_right_raw.png"
+  ],
+  "style": "realistic-child",
+  "headRatio": 6.5,
+  "headRatioMeasured": {
+    "front": 6.45,
+    "front_left": 6.37,
+    "front_right": 6.23
+  },
+  "ageRange": "9-11",
+  "directions": [
+    "front",
+    "front_left",
+    "front_right"
+  ],
+  "slots": [
+    "body",
+    "top",
+    "bottom",
+    "shoes"
+  ],
+  "slotsNote": "v2任务1完成槽位拆分：同底图分层擦除，body=皮肤/头发+内衣白底(衣区原像素提亮)，叠合还原差 avg≤2.3、零像素>60",
+  "frames": {
+    "idle": 1
+  },
+  "canvas": "128x192",
+  "anchor": "feet-bottom-center (0.5, 1.0)",
+  "source": "ai-generated+human-verified",
+  "batchId": "batch-2026-07-foundation",
+  "createdAt": "2026-07-22",
+  "version": 2,
+  "layerOrder": [
+    "body",
+    "bottom",
+    "shoes",
+    "top"
+  ],
+  "updatedAt": "2026-07-22"
+}
