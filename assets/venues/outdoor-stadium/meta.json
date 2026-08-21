@@ -1,0 +1,58 @@
+{
+  "id": "outdoor-stadium",
+  "name": "标准田径场（塑胶跑道＋天然草皮）",
+  "layers": [
+    "bg",
+    "floor",
+    "stands"
+  ],
+  "canvas": "1536x1024",
+  "flattenRatio": 0.5,
+  "gridAnchor": {
+    "desc": "floor菱形中心为网格原点(0,0)，菱形短轴为Y轴(压扁0.5)，长轴为X轴",
+    "floorCenterPx": [
+      757,
+      519
+    ],
+    "floorTopVertexY": 214
+  },
+  "spriteScaleRule": {
+    "spriteHeight": "floorShortAxis/10 ~ /12",
+    "floorShortAxisPx": 612,
+    "spriteHeightPx": [
+      51,
+      61
+    ],
+    "note": "40人8×5方阵站位余量"
+  },
+  "lightModel": "sky",
+  "lightPresets": [
+    "scene_light_morning.json",
+    "scene_light_noon.json",
+    "scene_light_evening.json"
+  ],
+  "spec": {
+    "track": "400m标准跑道 8道×1.22m 半圆半径36.5m",
+    "field": "天然草皮足球场 105×68m(FIFA)",
+    "area": "约8515㎡",
+    "surface": "红色塑胶(中低反射)+绿色草皮(低反射)"
+  },
+  "license": "self-produced",
+  "source": "ai-generated+human-verified",
+  "priceTier": "free",
+  "batchId": "batch-2026-07-foundation",
+  "createdAt": "2026-07-22",
+  "version": 3,
+  "bgComposition": {
+    "rule": "天空带≤15%画布高，树/建筑地平线≈15–22%，下部为虚焦草坪——与floor远端顶点(y≈214)衔接，此后8套场地统一执行"
+  },
+  "previewComposite": "assets_work/outdoor-stadium_preview_final.png",
+  "layerFiles": {
+    "bg": "outdoor-stadium_bg_raw.png",
+    "floor": "outdoor-stadium_floor_raw.png",
+    "stands": "outdoor-stadium_stands_raw.png"
+  },
+  "standsPlacement": {
+    "rule": "stands底边贴floor远端边线后方草坪条带(底边y≈300)，水平居中；远景版=缩至floor宽36%+18%天空蓝灰空气透视"
+  }
+}

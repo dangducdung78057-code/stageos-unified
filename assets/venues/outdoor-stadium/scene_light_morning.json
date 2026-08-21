@@ -1,0 +1,21 @@
+{
+  "venue": "outdoor-stadium",
+  "model": "sky",
+  "preset": "morning",
+  "computed": {
+    "preset_city": "nanchang",
+    "date": "2026-07-22",
+    "time": "08:00"
+  },
+  "key_tint": "#FFD7B1",
+  "kelvin": 4300,
+  "shadow": {
+    "azimuth": 262.78,
+    "factor": 1.621,
+    "vector_25d": {
+      "dx": -1.608,
+      "dy": 0.102
+    }
+  },
+  "note": "东侧低角度暖金，影投西偏南，长约1.6倍身高"
+}
